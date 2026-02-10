@@ -1,2 +1,3 @@
-# responsive-academic-result-analytics-web-app-with-excel-upload-semester-dashboar
-Exported from Caffeine project: Add Hallticket/Roll Number lookup to show an individual student's results
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

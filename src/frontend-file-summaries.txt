@@ -1,0 +1,20 @@
+{
+  "frontend/src/App.tsx": "Main application component managing view state, department filtering with auto-adjustment of semester selection, and coordinating both filtered and unfiltered data flow between Excel upload, analytics computation, and visualization components for the student lookup feature.",
+  "frontend/src/features/upload/UploadScreen.tsx": "Upload interface with drag-and-drop and file picker for Excel files, displaying processing status, user-friendly error messages, and updated guidance mentioning HTNO support and optional student names.",
+  "frontend/src/features/dashboard/SemesterDashboardView.tsx": "Semester dashboard displaying department dropdown filter, student result lookup card, analytics summary cards, subject-wise backlog analysis, and visualizations with tabbed navigation; passes both filtered and unfiltered student datasets to the lookup component for department-aware search and correctly uses SimpleBarChart with only the data prop.",
+  "frontend/src/features/comparison/SemesterComparisonView.tsx": "Multi-semester comparison view showing trend charts, detailed metrics table, and semester-to-semester performance changes with improvement/decline indicators.",
+  "frontend/src/lib/excel/parseExcelFile.ts": "Excel file parser with dual-mode support for both wide-format and long-format sheets, now detecting and extracting department/branch columns, treating them as metadata (not subjects), and populating a unique sorted departments list in ParsedData.",
+  "frontend/src/lib/analytics/computeSemesterAnalytics.ts": "Analytics computation engine calculating per-semester metrics including pass/fail rates, backlog counts, and subject-wise failure statistics.",
+  "frontend/src/lib/state/appFlowTypes.ts": "TypeScript type definitions for student records (now including optional department field), parsed data structure (now including departments array), and semester analytics output.",
+  "frontend/src/lib/format/numberFormat.ts": "Number and percentage formatting utilities with safe handling of NaN and Infinity values.",
+  "frontend/src/lib/guards/assertions.ts": "Runtime type guards and assertion helpers for null/undefined checks and validation.",
+  "frontend/src/components/charts/SimpleBarChart.tsx": "Lightweight SVG-based bar chart component that dynamically calculates its width based on the number of bars, ensuring adequate spacing and preventing label overlap; supports horizontal scrolling for large datasets while remaining responsive for small datasets.",
+  "frontend/src/components/charts/SimplePieChart.tsx": "SVG-based pie chart component for pass/fail distribution visualization with legend and percentage labels.",
+  "frontend/src/components/charts/SimpleLineChart.tsx": "SVG-based line chart component for semester trend visualization with grid lines and data point labels.",
+  "frontend/src/hooks/useQueries.ts": "Placeholder file for React Query hooks (currently unused as all processing is client-side).",
+  "frontend/package.json": "Frontend package configuration with added xlsx dependency for Excel file parsing.",
+  "frontend/src/index.css": "Global styles with customized OKLCH color system using neutral grayscale palette with subtle accent colors for charts.",
+  "frontend/index.html": "HTML entry point with SheetJS library loaded via CDN for Excel file parsing capabilities.",
+  "frontend/src/features/dashboard/StudentResultLookupCard.tsx": "Student result lookup component with search input for hallticket/roll number, displaying matching student records with overall status, backlog subjects, and subject-wise results table; implements department-aware search with helpful messaging when students exist outside the selected department filter.",
+  "frontend/src/lib/students/lookupStudentResults.ts": "Helper function that performs case-insensitive and whitespace-tolerant roll number lookup over student records, returning all matches to support multiple semesters."
+}

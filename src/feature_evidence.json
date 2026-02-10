@@ -1,0 +1,45 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-add-a-hallticket-no-roll-no-lookup-section-in-the-dashboard-view-that-lets-the-user-enter-a-hallticket-roll-number-and-view-that-student-s-results-from-the-currently-loaded-excel-dataset",
+      "featureTitle": "Add a Hallticket No / Roll No lookup section in the Dashboard view that lets the user enter a hallticket/roll number and view that student’s results from the currently loaded Excel dataset.",
+      "files": [
+        "frontend/src/features/dashboard/SemesterDashboardView.tsx",
+        "frontend/src/features/dashboard/StudentResultLookupCard.tsx",
+        "frontend/src/lib/students/lookupStudentResults.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-ensure-the-student-result-lookup-respects-the-currently-selected-department-filter-context-by-default-and-clearly-indicates-when-no-match-is-found-under-the-current-department-selection",
+      "featureTitle": "Ensure the student result lookup respects the currently selected Department filter context by default, and clearly indicates when no match is found under the current department selection.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/features/dashboard/SemesterDashboardView.tsx",
+        "frontend/src/features/dashboard/StudentResultLookupCard.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    }
+  ]
+}
