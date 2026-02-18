@@ -45,6 +45,7 @@ function App() {
       semesters: Array.from(semestersSet).sort(),
       subjects: Array.from(subjectsSet).sort(),
       departments: parsedData.departments,
+      subjectCatalog: parsedData.subjectCatalog,
     };
   }, [parsedData, selectedDepartment]);
 

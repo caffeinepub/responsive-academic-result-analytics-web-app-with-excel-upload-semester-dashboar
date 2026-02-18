@@ -1,13 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Let users look up and view an individual student’s results by entering a Hallticket/Roll Number on the dashboard, using the currently loaded Excel data.
+**Goal:** Make roll numbers shown in the Subject Analysis “Backlog Distribution” panel clickable so selecting one opens the existing Student Data Sheet for that student.
 
 **Planned changes:**
-- Add a "Hallticket No / Roll No" input and "Search" action to the Dashboard view, with Enter-to-search behavior.
-- Implement client-side lookup against the currently parsed student records (matching `StudentRecord.rollNumber`) and show an inline “no results” message when there are no matches.
-- Display matching record(s) (e.g., multiple semesters) with key details: student name (if available), roll number, semester, department (if available), overall status (pass/fail), backlog subjects (when present), and per-subject results (subject name/code, pass/fail, marks when available).
-- Add a clear/dismiss mechanism to reset the displayed student results (e.g., Clear button and/or clearing input).
-- Respect the currently selected Department filter by default when searching, and show a clear message when the roll number exists in the file but not under the current department selection (suggest switching to “All departments”), without changing the selection automatically.
+- Render each roll number in the Backlog Distribution panel as an interactive control with clear hover/focus states.
+- Add a roll-number selection callback prop (e.g., `onRollNumberSelect`) to `BacklogDistributionPanel` and invoke it when a roll number is clicked.
+- Wire `SemesterDashboardView` to pass its existing roll-number selection handler to `BacklogDistributionPanel`, keeping `StudentDataSheetPanel` rendered/controlled only in `SemesterDashboardView`.
+- Reuse existing Student Data Sheet behavior: show the student’s sheet when found, or the existing “Student Not Found” state when not found, without breaking the failed-students dropdown behavior.
 
-**User-visible outcome:** On the dashboard, users can enter a hallticket/roll number to view that student’s result details from the uploaded Excel dataset, with clear messages when nothing matches (including under the selected department) and an easy way to clear results.
+**User-visible outcome:** In Dashboard > Subject Analysis, clicking any roll number in Backlog Distribution opens the same Student Data Sheet panel as selecting a roll number from the failed-students dropdown, including the existing “Student Not Found” behavior when applicable.

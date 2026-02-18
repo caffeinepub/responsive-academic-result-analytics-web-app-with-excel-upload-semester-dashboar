@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,11 @@ import { formatNumber, formatPercentage } from '@/lib/format/numberFormat';
 import SimpleBarChart from '@/components/charts/SimpleBarChart';
 import SimplePieChart from '@/components/charts/SimplePieChart';
 import StudentResultLookupCard from './StudentResultLookupCard';
+import SubjectAnalysisList from './SubjectAnalysisList';
+import BacklogDistributionPanel from './BacklogDistributionPanel';
+import StudentDataSheetPanel from './StudentDataSheetPanel';
+import { computeSubjectFailures } from '@/lib/analytics/subjectFailure';
+import { computeBacklogDistribution } from '@/lib/analytics/backlogDistribution';
 import { TrendingUp, TrendingDown, Users, BookOpen, AlertTriangle, BarChart3, Building2 } from 'lucide-react';
 
 interface SemesterDashboardViewProps {
@@ -35,9 +41,45 @@ export default function SemesterDashboardView({
   selectedDepartment,
   onDepartmentChange,
 }: SemesterDashboardViewProps) {
+  const [selectedRollNumber, setSelectedRollNumber] = useState<string | null>(null);
+  
   const semesters = Array.from(analytics.keys()).sort();
   const hasMultipleSemesters = semesters.length > 1;
   const hasDepartments = availableDepartments.length > 0;
+
+  // Get students for selected semester
+  const selectedSemesterStudents = useMemo(() => {
+    if (!selectedSemester) return [];
+    return parsedData.students.filter(s => s.semester === selectedSemester);
+  }, [parsedData.students, selectedSemester]);
+
+  // Compute subject failures for selected semester
+  const subjectFailures = useMemo(() => {
+    return computeSubjectFailures(selectedSemesterStudents);
+  }, [selectedSemesterStudents]);
+
+  // Compute backlog distribution for selected semester
+  const backlogGroups = useMemo(() => {
+    return computeBacklogDistribution(selectedSemesterStudents);
+  }, [selectedSemesterStudents]);
+
+  // Find selected student
+  const selectedStudent = useMemo(() => {
+    if (!selectedRollNumber) return null;
+    return selectedSemesterStudents.find(
+      s => s.rollNumber.toLowerCase().trim() === selectedRollNumber.toLowerCase().trim()
+    ) || null;
+  }, [selectedRollNumber, selectedSemesterStudents]);
+
+  // Handle student selection from dropdown or backlog distribution
+  const handleFailedStudentSelect = (rollNumber: string) => {
+    setSelectedRollNumber(rollNumber);
+  };
+
+  // Handle closing the student data sheet
+  const handleCloseDataSheet = () => {
+    setSelectedRollNumber(null);
+  };
 
   // Handle empty state after filtering
   if (!selectedSemester || semesters.length === 0) {
@@ -262,6 +304,15 @@ export default function SemesterDashboardView({
         </TabsContent>
 
         <TabsContent value="subjects" className="space-y-4">
+          {/* Student Data Sheet Panel */}
+          {selectedRollNumber && (
+            <StudentDataSheetPanel
+              student={selectedStudent}
+              subjectCatalog={parsedData.subjectCatalog}
+              onClose={handleCloseDataSheet}
+            />
+          )}
+
           <Card>
             <CardHeader>
               <CardTitle>Subject-wise Backlog Analysis</CardTitle>
@@ -270,34 +321,19 @@ export default function SemesterDashboardView({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {subjectBacklogData.length > 0 ? (
-                <div className="space-y-4">
-                  {subjectBacklogData.map((item) => (
-                    <div key={item.name} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{item.name}</span>
-                        <Badge variant="outline" className="bg-chart-1/10 text-chart-1 border-chart-1/20">
-                          {formatNumber(item.value)} students
-                        </Badge>
-                      </div>
-                      <div className="h-2 bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-chart-1 transition-all"
-                          style={{
-                            width: `${(item.value / semesterData.totalStudents) * 100}%`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center text-muted-foreground py-8">
-                  No backlogs recorded for this semester
-                </p>
-              )}
+              <SubjectAnalysisList
+                subjectBacklogs={semesterData.subjectWiseBacklogs}
+                subjectFailures={subjectFailures}
+                subjectCatalog={parsedData.subjectCatalog}
+                onFailedStudentSelect={handleFailedStudentSelect}
+              />
             </CardContent>
           </Card>
+
+          <BacklogDistributionPanel 
+            backlogGroups={backlogGroups}
+            onRollNumberSelect={handleFailedStudentSelect}
+          />
         </TabsContent>
 
         <TabsContent value="graphs" className="space-y-4">

@@ -1,58 +1,48 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Hallticket/Roll Number student result lookup in Dashboard",
+  "title": "Make Backlog Distribution roll numbers open Student Data Sheet",
   "requirements": [
     {
-      "id": "REQ-5",
-      "summary": "Add a Hallticket No / Roll No lookup section in the dashboard to search the currently loaded parsed student records and display matching student result(s).",
+      "id": "REQ-1",
+      "summary": "Make Backlog Distribution roll numbers clickable to select a student and display the existing StudentDataSheetPanel.",
       "acceptanceCriteria": [
-        "On the dashboard screen, there is an input labeled \"Hallticket No / Roll No\" and a \"Search\" action.",
-        "Typing a hallticket/roll number and pressing Enter or clicking Search performs a lookup against the parsed student records (StudentRecord.rollNumber).",
-        "If no matching student record is found, an inline, user-friendly message is shown (e.g., \"No results found for that hallticket number.\") without crashing the page.",
-        "If one or more records match (e.g., the same roll number appears in multiple semesters), the UI displays the matching result(s) clearly, including: student name (if available), roll number, semester, department (if available), overall status (pass/fail), backlog subjects list (when present), and a per-subject results table/list (subject name/code, pass/fail, and marks when available).",
-        "Search results update when the user performs a new search, and there is a clear way to dismiss/clear the displayed student result (e.g., a \"Clear\" button or clearing the input)."
+        "In Backlog Distribution, each roll number is rendered as an interactive control (e.g., button-like badge) with a clear hover/focus state.",
+        "Clicking a roll number sets the currently selected roll number in the dashboard state and displays the existing StudentDataSheetPanel populated with that student's record.",
+        "If a roll number from Backlog Distribution does not exist in the currently filtered semester/department dataset, the existing 'Student Not Found' state in StudentDataSheetPanel is shown.",
+        "This change does not break the existing SubjectAnalysisList failed-student selection behavior."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/dashboard/StudentResultLookupCard.tsx",
-          "operation": "create",
-          "description": "Create a dedicated dashboard section component for Hallticket No / Roll No lookup. Use shadcn-ui composed components (e.g., Card, Button, Badge) to present the search UI, results list (supporting multiple matches), and a Clear action; render per-subject results as a table/list with subject identifier, pass/fail, and marks when available. Verify the component's usage instructions before implementing."
+          "path": "frontend/src/features/dashboard/BacklogDistributionPanel.tsx",
+          "operation": "modify",
+          "description": "Render each roll number as an interactive control (compose existing shadcn-ui primitives, e.g., Button/Badge styling) with hover/focus states, and call the provided selection callback when clicked. Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/features/dashboard/SemesterDashboardView.tsx",
           "operation": "modify",
-          "description": "Wire the new StudentResultLookupCard into the Dashboard view layout so it is visible on the dashboard screen (within the existing view, not as a new route). Pass the currently department-filtered student dataset used by the dashboard into the lookup component, and ensure Enter key and Search button trigger search, and Clear resets the UI. Use existing shadcn-ui composed components already used in this view; do not modify any files under frontend/src/components/ui. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/lib/students/lookupStudentResults.ts",
-          "operation": "create",
-          "description": "Add a small helper that performs a case/whitespace-tolerant rollNumber match over a provided StudentRecord[] and returns all matches (to support multiple semesters) in a UI-friendly structure."
+          "description": "Wire BacklogDistributionPanel roll-number clicks to the existing dashboard selection state so StudentDataSheetPanel (already rendered in Subject Analysis tab) shows the selected student's data or the existing 'Student Not Found' state when no match is found. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-6",
-      "summary": "Make the lookup respect the current Department filter by default and show a clear message when the roll exists in the uploaded data but not in the current department-filtered dataset.",
+      "id": "REQ-2",
+      "summary": "Add an onRollNumberSelect callback prop to BacklogDistributionPanel and pass the existing dashboard roll-number selection handler from SemesterDashboardView.",
       "acceptanceCriteria": [
-        "When a specific department (not \"All departments\") is selected, the lookup searches within the currently department-filtered dataset used by the dashboard.",
-        "If a roll number exists in the uploaded file but is not present in the current department-filtered dataset, the UI shows a message indicating the student was not found under the selected department (and suggests switching to \"All departments\"), without altering the selected department automatically."
+        "BacklogDistributionPanel accepts an optional roll-number selection callback and invokes it with the clicked roll number string.",
+        "SemesterDashboardView passes its existing roll-number selection handler to BacklogDistributionPanel.",
+        "StudentDataSheetPanel remains rendered only by SemesterDashboardView (single place of truth for selection)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/features/dashboard/BacklogDistributionPanel.tsx",
           "operation": "modify",
-          "description": "Update wiring so the dashboard receives both (1) the current department-filtered ParsedData used for dashboard analytics and (2) the unfiltered full ParsedData from the uploaded file, enabling the lookup UI to detect when a roll exists outside the current department filter without changing the selected department."
+          "description": "Extend BacklogDistributionPanel props with an optional onRollNumberSelect callback and invoke it with the clicked roll number string, without adding any Student Data Sheet rendering logic to this panel. Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/features/dashboard/SemesterDashboardView.tsx",
           "operation": "modify",
-          "description": "Extend props to accept both filtered and unfiltered student datasets and pass both to StudentResultLookupCard. Ensure the lookup defaults to searching the filtered dataset, and if no match is found there but matches exist in the unfiltered dataset, display a department-context message suggesting switching to \"All departments\" (without auto-changing the Select). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/features/dashboard/StudentResultLookupCard.tsx",
-          "operation": "modify",
-          "description": "Implement the department-context behavior: run search against filteredStudents by default; if no matches and selectedDepartment is not \"all\", run a secondary check against allStudents to determine whether to show the special \"not found under selected department\" message vs a general \"no results\" message. Provide inline, user-friendly messaging and keep results cleared/updated on subsequent searches. Verify the component's usage instructions before implementing."
+          "description": "Pass the existing roll-number selection handler (used for SubjectAnalysisList failed-student selection) into BacklogDistributionPanel via the new onRollNumberSelect prop, keeping StudentDataSheetPanel rendered only here. Verify the component's usage instructions before implementing."
         }
       ]
     }

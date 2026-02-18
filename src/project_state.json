@@ -1,24 +1,24 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Project to deploy an update that includes a department dropdown and adds a student results lookup via hallticket number/roll number input.",
+  "summary": "New project",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-add-a-hallticket-no-roll-no-lookup-section-in-the-dashboard-view-that-lets-the-user-enter-a-hallticket-roll-number-and-view-that-student-s-results-from-the-currently-loaded-excel-dataset",
-      "title": "Add a Hallticket No / Roll No lookup section in the Dashboard view that lets the user enter a hallticket/roll number and view that student’s results from the currently loaded Excel dataset.",
+      "id": "feature-in-the-dashboard-subject-analysis-tab-update-the-backlog-distribution-panel-so-that-each-displayed-roll-number-is-clickable-and-selecting-it-opens-the-full-student-data-sheet-for-that-student-using-the-same-behavior-as-selecting-a-roll-number-from-the-subject-analysis-failed-students-dropdown",
+      "title": "In the Dashboard > Subject Analysis tab, update the Backlog Distribution panel so that each displayed roll number is clickable and selecting it opens the full Student Data Sheet for that student (using the same behavior as selecting a roll number from the Subject Analysis failed-students dropdown).",
       "reqIds": [
-        "REQ-5"
+        "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-ensure-the-student-result-lookup-respects-the-currently-selected-department-filter-context-by-default-and-clearly-indicates-when-no-match-is-found-under-the-current-department-selection",
-      "title": "Ensure the student result lookup respects the currently selected Department filter context by default, and clearly indicates when no match is found under the current department selection.",
+      "id": "feature-add-a-callback-interface-between-semesterdashboardview-and-backlogdistributionpanel-e-g-an-onrollnumberselect-prop-so-the-backlog-distribution-panel-can-notify-the-dashboard-of-the-clicked-roll-number-without-duplicating-student-data-sheet-rendering-logic-inside-backlogdistributionpanel",
+      "title": "Add a callback interface between SemesterDashboardView and BacklogDistributionPanel (e.g., an onRollNumberSelect prop) so the Backlog Distribution panel can notify the dashboard of the clicked roll number without duplicating Student Data Sheet rendering logic inside BacklogDistributionPanel.",
       "reqIds": [
-        "REQ-6"
+        "REQ-2"
       ],
       "version": 1
     }
@@ -26,12 +26,13 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add a Roll No / Hallticket No input section to fetch and display a student's results by entering the hallticket number.",
+      "summary": "Apply the same student roll-number click behavior to the backlog distribution view so clicking a roll number opens the student's complete data sheet.",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "Add Hallticket/Roll Number lookup to show an individual student's results",
+  "gameProjectType": "none",
+  "projectName": "Academic Result Analytics",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

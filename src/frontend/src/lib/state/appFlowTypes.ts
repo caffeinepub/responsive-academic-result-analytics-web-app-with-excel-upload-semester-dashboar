@@ -13,6 +13,7 @@ export interface ParsedData {
   semesters: string[];
   subjects: string[];
   departments: string[];
+  subjectCatalog: Record<string, string>;
 }
 
 export interface SemesterAnalytics {

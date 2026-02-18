@@ -95,6 +95,7 @@ function processLongFormatData(data: any[], columns: string[]): ParsedData {
   const studentMap = new Map<string, Map<string, any[]>>();
   const subjectsSet = new Set<string>();
   const departmentsSet = new Set<string>();
+  const subjectCatalog: Record<string, string> = {};
 
   data.forEach((row, index) => {
     try {
@@ -103,243 +104,222 @@ function processLongFormatData(data: any[], columns: string[]): ParsedData {
 
       const semester = semesterCol ? String(row[semesterCol] || 'Semester 1').trim() : 'Semester 1';
       
-      // Get department if available
-      const department = branchCol ? String(row[branchCol] || '').trim() : '';
-      if (department) {
-        departmentsSet.add(department);
-      }
+      // Get subject code and name
+      const subCode = subCodeCol ? String(row[subCodeCol] || '').trim() : '';
+      const subName = subNameCol ? String(row[subNameCol] || '').trim() : '';
       
-      // Get subject identifier (prefer SUBCODE, fallback to SUBNAME)
-      let subjectId = '';
-      if (subCodeCol) {
-        subjectId = String(row[subCodeCol] || '').trim();
-      }
-      if (!subjectId && subNameCol) {
-        subjectId = String(row[subNameCol] || '').trim();
-      }
+      // Use subject code as primary identifier, fallback to subject name
+      const subjectIdentifier = subCode || subName;
       
-      if (!subjectId) return; // Skip rows without subject identifier
+      if (!subjectIdentifier) {
+        console.warn(`Row ${index + 2}: Missing both subject code and name, skipping`);
+        return;
+      }
 
-      subjectsSet.add(subjectId);
+      // Build subject catalog mapping (code -> name)
+      if (subCode && subName) {
+        subjectCatalog[subCode] = subName;
+      } else if (subCode && !subName) {
+        // Code exists but no name - use empty string as fallback
+        if (!subjectCatalog[subCode]) {
+          subjectCatalog[subCode] = '';
+        }
+      }
 
-      // Group by student
-      if (!studentMap.has(htno)) {
-        studentMap.set(htno, new Map());
+      // Check if this is a department/branch column (not a subject)
+      const isDepartmentRow = branchCol && row[branchCol];
+      if (isDepartmentRow) {
+        const dept = String(row[branchCol] || '').trim();
+        if (dept) {
+          departmentsSet.add(dept);
+        }
       }
-      const studentSemesters = studentMap.get(htno)!;
+
+      subjectsSet.add(subjectIdentifier);
+
+      const key = `${htno}_${semester}`;
+      if (!studentMap.has(key)) {
+        studentMap.set(key, new Map());
+      }
       
-      if (!studentSemesters.has(semester)) {
-        studentSemesters.set(semester, []);
+      const semesterMap = studentMap.get(key)!;
+      if (!semesterMap.has(htno)) {
+        semesterMap.set(htno, []);
       }
-      studentSemesters.get(semester)!.push(row);
-    } catch (error) {
-      console.warn(`Skipping row ${index + 1} due to error:`, error);
+      
+      semesterMap.get(htno)!.push(row);
+    } catch (err) {
+      console.warn(`Error processing row ${index + 2}:`, err);
     }
   });
 
-  // Convert grouped data to StudentRecord[]
+  // Convert to StudentRecord array
   const students: StudentRecord[] = [];
-  const semesters = new Set<string>();
 
-  studentMap.forEach((semesterMap, htno) => {
-    semesterMap.forEach((rows, semester) => {
-      semesters.add(semester);
+  studentMap.forEach((semesterMap, key) => {
+    semesterMap.forEach((rows, htno) => {
+      if (rows.length === 0) return;
 
-      // Get student name from first row (optional)
-      const studentName = nameCol ? String(rows[0][nameCol] || '').trim() : '';
-      
-      // Get department from first row (optional)
-      const department = branchCol ? String(rows[0][branchCol] || '').trim() : undefined;
+      const firstRow = rows[0];
+      const semester = semesterCol ? String(firstRow[semesterCol] || 'Semester 1').trim() : 'Semester 1';
+      const studentName = nameCol ? String(firstRow[nameCol] || '').trim() : '';
+      const department = branchCol ? String(firstRow[branchCol] || '').trim() : undefined;
 
       const subjectResults: Record<string, { marks?: number; status: 'pass' | 'fail' }> = {};
       const backlogSubjects: string[] = [];
-      let hasFailed = false;
 
       rows.forEach(row => {
-        // Get subject identifier
-        let subjectId = '';
-        if (subCodeCol) {
-          subjectId = String(row[subCodeCol] || '').trim();
-        }
-        if (!subjectId && subNameCol) {
-          subjectId = String(row[subNameCol] || '').trim();
-        }
-        if (!subjectId) return;
-
-        // Get grade letter
-        const gradeLetter = String(row[gradeLetterCol] || '').trim().toUpperCase();
+        const subCode = subCodeCol ? String(row[subCodeCol] || '').trim() : '';
+        const subName = subNameCol ? String(row[subNameCol] || '').trim() : '';
+        const subjectIdentifier = subCode || subName;
         
-        // Determine status: F = fail, anything else non-empty = pass
-        let status: 'pass' | 'fail' = 'pass';
-        if (gradeLetter === 'F') {
-          status = 'fail';
-          hasFailed = true;
-          backlogSubjects.push(subjectId);
-        } else if (!gradeLetter) {
-          // Empty grade letter - skip this subject
-          return;
-        }
+        if (!subjectIdentifier) return;
 
-        // Try to extract marks from grade point if available
-        let marks: number | undefined = undefined;
-        if (gradePointCol) {
-          const gradePoint = parseFloat(String(row[gradePointCol] || '').trim());
-          if (!isNaN(gradePoint)) {
-            marks = gradePoint;
-          }
-        }
+        const gradeLetter = String(row[gradeLetterCol] || '').trim().toUpperCase();
+        const gradePoint = gradePointCol ? parseFloat(row[gradePointCol]) : undefined;
 
-        subjectResults[subjectId] = { status, ...(marks !== undefined && { marks }) };
+        // Determine pass/fail
+        const failGrades = ['F', 'AB', 'ABSENT', 'FAIL'];
+        const status = failGrades.includes(gradeLetter) ? 'fail' : 'pass';
+
+        subjectResults[subjectIdentifier] = {
+          marks: gradePoint,
+          status,
+        };
+
+        if (status === 'fail') {
+          backlogSubjects.push(subjectIdentifier);
+        }
       });
+
+      const overallStatus = backlogSubjects.length === 0 ? 'pass' : 'fail';
 
       students.push({
         rollNumber: htno,
         studentName,
         semester,
-        ...(department && { department }),
+        department,
         subjectResults,
-        overallStatus: hasFailed ? 'fail' : 'pass',
+        overallStatus,
         backlogSubjects,
       });
     });
   });
 
-  if (students.length === 0) {
-    throw new Error('No valid student records found in the Excel file. Please check the file format.');
-  }
-
   return {
     students,
-    semesters: Array.from(semesters).sort(),
+    semesters: Array.from(new Set(students.map(s => s.semester))).sort(),
     subjects: Array.from(subjectsSet).sort(),
     departments: Array.from(departmentsSet).sort(),
+    subjectCatalog,
   };
 }
 
 function processWideFormatData(data: any[], columns: string[]): ParsedData {
-  const students: StudentRecord[] = [];
-  const semesters = new Set<string>();
-  const subjects = new Set<string>();
-  const departmentsSet = new Set<string>();
-
-  // Find key columns (case-insensitive) - now including HTNO and department
-  const rollCol = columns.find(c => 
-    /htno|hall.*ticket|roll|id|student.*id|enrollment/i.test(c)
-  );
-  const nameCol = columns.find(c => 
-    /name|student.*name/i.test(c)
-  );
-  const semesterCol = columns.find(c => 
-    /sem|semester/i.test(c)
-  );
-  const branchCol = columns.find(c => 
-    /branch|department|dept/i.test(c)
+  // Find roll number column
+  const rollNumberCol = columns.find(c => 
+    /roll.*no|roll.*number|htno|hall.*ticket|student.*id/i.test(c)
   );
 
-  if (!rollCol) {
-    throw new Error('Could not find Roll Number, Student ID, or HTNO column. Please ensure your Excel file has a column with "Roll", "ID", "Student ID", or "HTNO" in the header.');
+  if (!rollNumberCol) {
+    throw new Error('Could not find Roll Number column. Please ensure your Excel file has a column with "Roll No", "HTNO", or "Hall Ticket" in the header.');
   }
 
+  // Find optional columns
+  const nameCol = columns.find(c => /name|student.*name/i.test(c));
+  const semesterCol = columns.find(c => /sem|semester/i.test(c));
+  const branchCol = columns.find(c => /branch|department|dept/i.test(c));
+
   // Identify subject columns (exclude metadata columns)
-  const metadataColumns = new Set([
-    rollCol?.toLowerCase(),
-    nameCol?.toLowerCase(),
-    semesterCol?.toLowerCase(),
-    branchCol?.toLowerCase(),
-    'backlog',
-    'backlogs',
-    'status',
-    'result',
-    'total',
-    'percentage',
-    'grade',
-    'branch',
-    'department',
-    'dept',
-    'htno',
-  ].filter(Boolean));
+  const metadataColumns = [rollNumberCol, nameCol, semesterCol, branchCol].filter(Boolean) as string[];
+  const subjectColumns = columns.filter(col => !metadataColumns.includes(col));
 
-  const subjectColumns = columns.filter(col => {
-    const lower = col.toLowerCase();
-    return !metadataColumns.has(lower) && col.trim().length > 0;
-  });
+  if (subjectColumns.length === 0) {
+    throw new Error('No subject columns found. Please ensure your Excel file has subject columns with marks or grades.');
+  }
 
-  // Process each row
+  const students: StudentRecord[] = [];
+  const subjectsSet = new Set<string>();
+  const departmentsSet = new Set<string>();
+  const subjectCatalog: Record<string, string> = {};
+
   data.forEach((row, index) => {
     try {
-      const rollNumber = String(row[rollCol] || '').trim();
+      const rollNumber = String(row[rollNumberCol] || '').trim();
       if (!rollNumber) return; // Skip empty rows
 
-      // Student name is optional - use empty string if not present
       const studentName = nameCol ? String(row[nameCol] || '').trim() : '';
       const semester = semesterCol ? String(row[semesterCol] || 'Semester 1').trim() : 'Semester 1';
-      
-      // Get department if available
       const department = branchCol ? String(row[branchCol] || '').trim() : undefined;
+
       if (department) {
         departmentsSet.add(department);
       }
 
-      semesters.add(semester);
-
       const subjectResults: Record<string, { marks?: number; status: 'pass' | 'fail' }> = {};
       const backlogSubjects: string[] = [];
-      let hasFailed = false;
 
-      // Process subject columns
-      subjectColumns.forEach(subjectCol => {
-        const value = String(row[subjectCol] || '').trim();
-        if (!value) return;
-
-        subjects.add(subjectCol);
-
-        // Try to parse as number (marks)
-        const marks = parseFloat(value);
-        let status: 'pass' | 'fail' = 'pass';
-
-        if (!isNaN(marks)) {
-          // Assume passing marks is 40 or above (common threshold)
-          status = marks >= 40 ? 'pass' : 'fail';
-          subjectResults[subjectCol] = { marks, status };
-        } else {
-          // Parse as text status
-          const lower = value.toLowerCase();
-          if (lower.includes('fail') || lower === 'f' || lower === 'absent' || lower === 'ab') {
-            status = 'fail';
-          } else if (lower.includes('pass') || lower === 'p') {
-            status = 'pass';
-          }
-          subjectResults[subjectCol] = { status };
+      subjectColumns.forEach(subject => {
+        subjectsSet.add(subject);
+        
+        // In wide format, subject column name is the identifier
+        // No separate name available, so catalog maps to empty string
+        if (!subjectCatalog[subject]) {
+          subjectCatalog[subject] = '';
         }
+
+        const value = String(row[subject] || '').trim().toUpperCase();
+        
+        if (!value) {
+          // Empty cell - treat as not applicable
+          return;
+        }
+
+        // Try to parse as number first
+        const numericValue = parseFloat(value);
+        
+        let status: 'pass' | 'fail';
+        let marks: number | undefined;
+
+        if (!isNaN(numericValue)) {
+          // Numeric marks
+          marks = numericValue;
+          // Assume passing marks is 40 (common threshold)
+          status = numericValue >= 40 ? 'pass' : 'fail';
+        } else {
+          // Grade letter
+          const failGrades = ['F', 'AB', 'ABSENT', 'FAIL'];
+          status = failGrades.includes(value) ? 'fail' : 'pass';
+        }
+
+        subjectResults[subject] = { marks, status };
 
         if (status === 'fail') {
-          hasFailed = true;
-          backlogSubjects.push(subjectCol);
+          backlogSubjects.push(subject);
         }
       });
+
+      const overallStatus = backlogSubjects.length === 0 ? 'pass' : 'fail';
 
       students.push({
         rollNumber,
         studentName,
         semester,
-        ...(department && { department }),
+        department,
         subjectResults,
-        overallStatus: hasFailed ? 'fail' : 'pass',
+        overallStatus,
         backlogSubjects,
       });
-    } catch (error) {
-      console.warn(`Skipping row ${index + 1} due to error:`, error);
+    } catch (err) {
+      console.warn(`Error processing row ${index + 2}:`, err);
     }
   });
 
-  if (students.length === 0) {
-    throw new Error('No valid student records found in the Excel file. Please check the file format.');
-  }
-
   return {
     students,
-    semesters: Array.from(semesters).sort(),
-    subjects: Array.from(subjects).sort(),
+    semesters: Array.from(new Set(students.map(s => s.semester))).sort(),
+    subjects: Array.from(subjectsSet).sort(),
     departments: Array.from(departmentsSet).sort(),
+    subjectCatalog,
   };
 }

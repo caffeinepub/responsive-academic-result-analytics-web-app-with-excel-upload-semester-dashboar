@@ -1,66 +1,59 @@
 {
   "kind": "build_request",
-  "title": "Add Hallticket/Roll Number lookup to show an individual student's results",
+  "title": "Make backlog distribution roll numbers open the Student Data Sheet",
+  "projectName": "Academic Result Analytics",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-5",
-      "text": "Add a Hallticket No / Roll No lookup section in the Dashboard view that lets the user enter a hallticket/roll number and view that student’s results from the currently loaded Excel dataset.",
+      "id": "REQ-1",
+      "text": "In the Dashboard > Subject Analysis tab, update the Backlog Distribution panel so that each displayed roll number is clickable and selecting it opens the full Student Data Sheet for that student (using the same behavior as selecting a roll number from the Subject Analysis failed-students dropdown).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "also add a rollno section by entering the halticket no we can see the students results"
+          "make it same for the backlog distribution also when we click on the roll no the complete data sheet of student should appear"
         ]
       },
       "acceptanceCriteria": [
-        "On the dashboard screen, there is an input labeled \"Hallticket No / Roll No\" and a \"Search\" action.",
-        "Typing a hallticket/roll number and pressing Enter or clicking Search performs a lookup against the parsed student records (StudentRecord.rollNumber).",
-        "If no matching student record is found, an inline, user-friendly message is shown (e.g., \"No results found for that hallticket number.\") without crashing the page.",
-        "If one or more records match (e.g., the same roll number appears in multiple semesters), the UI displays the matching result(s) clearly, including: student name (if available), roll number, semester, department (if available), overall status (pass/fail), backlog subjects list (when present), and a per-subject results table/list (subject name/code, pass/fail, and marks when available).",
-        "Search results update when the user performs a new search, and there is a clear way to dismiss/clear the displayed student result (e.g., a \"Clear\" button or clearing the input)."
+        "In Backlog Distribution, each roll number is rendered as an interactive control (e.g., button-like badge) with a clear hover/focus state.",
+        "Clicking a roll number sets the currently selected roll number in the dashboard state and displays the existing StudentDataSheetPanel populated with that student's record.",
+        "If a roll number from Backlog Distribution does not exist in the currently filtered semester/department dataset, the existing 'Student Not Found' state in StudentDataSheetPanel is shown.",
+        "This change does not break the existing SubjectAnalysisList failed-student selection behavior."
       ]
     },
     {
-      "id": "REQ-6",
-      "text": "Ensure the student result lookup respects the currently selected Department filter context by default, and clearly indicates when no match is found under the current department selection.",
+      "id": "REQ-2",
+      "text": "Add a callback interface between SemesterDashboardView and BacklogDistributionPanel (e.g., an onRollNumberSelect prop) so the Backlog Distribution panel can notify the dashboard of the clicked roll number without duplicating Student Data Sheet rendering logic inside BacklogDistributionPanel.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "also add a rollno section by entering the halticket no we can see the students results"
+          "make it same for the backlog distribution also when we click on the roll no the complete data sheet of student should appear"
         ]
       },
       "acceptanceCriteria": [
-        "When a specific department (not \"All departments\") is selected, the lookup searches within the currently department-filtered dataset used by the dashboard.",
-        "If a roll number exists in the uploaded file but is not present in the current department-filtered dataset, the UI shows a message indicating the student was not found under the selected department (and suggests switching to \"All departments\"), without altering the selected department automatically."
+        "BacklogDistributionPanel accepts an optional roll-number selection callback and invokes it with the clicked roll number string.",
+        "SemesterDashboardView passes its existing roll-number selection handler to BacklogDistributionPanel.",
+        "StudentDataSheetPanel remains rendered only by SemesterDashboardView (single place of truth for selection)."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (Shadcn UI components are read-only and must be composed, not modified).",
-    "Do not edit immutable hook paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx."
+    "Do not edit any files under frontend/src/components/ui (compose existing shadcn components instead).",
+    "Do not modify Internet Identity hooks or other files listed as immutable paths in SYSTEM_CONTEXT.",
+    "Keep all changes within the existing React + TypeScript + Tailwind structure; no new backend dependencies."
   ],
   "nonGoals": [
-    "Do not add any backend canister APIs or persistence for student records; lookup is performed only on the client-side parsed Excel data already loaded in the app.",
-    "Do not add third-party authentication providers or external database/storage integrations."
+    "Adding new backend storage or APIs for student records (data continues to come from the uploaded Excel file).",
+    "Changing analytics calculations for backlog distribution or subject failures.",
+    "Adding new navigation routes or a separate dedicated page for the student data sheet."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }
