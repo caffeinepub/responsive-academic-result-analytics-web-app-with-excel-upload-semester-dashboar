@@ -1,10 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Automatically bring the Student Data Sheet panel into view when a roll number is selected in Subject Analysis > Backlog Distribution.
+**Goal:** Adjust subject abbreviation generation rules so abbreviations exclude the word "and" and apply a custom rule for the word "through", without breaking existing formatting behavior.
 
 **Planned changes:**
-- Update the Backlog Distribution roll number click behavior to show the Student Data Sheet (or Student Not Found) for the selected roll number.
-- After roll number selection (from Backlog Distribution and the existing failed students dropdown), automatically scroll the page so the Student Data Sheet panel is within the viewport.
+- Update the subject abbreviation derivation logic to skip the word "and" (case-insensitive) when generating abbreviations.
+- Add custom handling for the word "through" (case-insensitive) instead of the default “first letter of each word” behavior.
+- Ensure existing callers of `formatSubjectCodeWithAbbreviation` continue to work, including fallback to code-only display when the subject name is missing/unavailable.
+- Add lightweight frontend test coverage for `deriveSubjectAbbreviation` covering normal multi-word names, names containing "and", names containing "through", and mixed-case inputs.
 
-**User-visible outcome:** When a user clicks a roll number in Backlog Distribution (or selects one via the existing failed students dropdown), the Student Data Sheet for that student is shown and automatically scrolled into view without manual scrolling.
+**User-visible outcome:** Subject codes/labels that display abbreviations will no longer include letters derived from "and", and will apply the custom abbreviation behavior for "through", with no UI regressions or runtime errors.

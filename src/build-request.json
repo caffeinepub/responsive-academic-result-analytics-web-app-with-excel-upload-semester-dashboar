@@ -1,36 +1,52 @@
 {
   "kind": "build_request",
-  "title": "Show student data sheet when selecting roll number in Backlog Distribution",
+  "title": "Adjust subject abbreviation rules (exclude 'and' and handle 'through')",
   "projectName": "Academic Result Analytics",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "When a user clicks a roll number in Dashboard > Subject Analysis > Backlog Distribution, ensure the selected student's Student Data Sheet becomes immediately visible (i.e., the page should automatically bring the Student Data Sheet panel into view after selection).",
+      "text": "Update subject abbreviation generation so that the word \"and\" is not used when deriving abbreviations, and the word \"through\" is handled with a custom rule instead of the default \"first letter of each word\" behavior.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-3"
         ],
         "quotes": [
-          "in backlog distribution also when we click on the roll no the student data should be visible"
+          "for abrivation dont take word and and through change"
         ]
       },
       "acceptanceCriteria": [
-        "Given the user is on the Dashboard in the Subject Analysis tab, when they click any roll number button inside Backlog Distribution, the Student Data Sheet panel is shown for that roll number (or a Student Not Found panel if no match exists).",
-        "After clicking a roll number in Backlog Distribution, the UI automatically scrolls so that the Student Data Sheet panel is within the viewport without the user needing to manually scroll.",
-        "The existing behavior of selecting a roll number from Subject Analysis (failed students dropdown) continues to work and also results in the Student Data Sheet being brought into view."
+        "For a subject name containing \"and\" (case-insensitive), the abbreviation does not include a letter derived from that word (e.g., \"Research and Development\" -> \"RD\").",
+        "For a subject name containing \"through\" (case-insensitive), the abbreviation uses the agreed custom mapping for that word (not the default single first letter).",
+        "Existing callers of formatSubjectCodeWithAbbreviation continue to render without runtime errors, and subject codes still fall back to code-only display when the subject name is missing or unavailable."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Add unit tests (or equivalent lightweight test coverage used in this codebase) for deriveSubjectAbbreviation covering: normal multi-word names, names containing \"and\", names containing \"through\", and mixed-case inputs.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "for abrivation dont take word and and through change"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Tests demonstrate that \"and\" is excluded from abbreviation derivation.",
+        "Tests demonstrate the custom handling for \"through\".",
+        "Tests cover case-insensitive matching for both words."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (Shadcn UI sources are read-only).",
-    "Do not modify frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
-    "Keep the backend as-is (no backend changes required for this feature)."
+    "Do not edit files under frontend/src/components/ui or any other immutable paths listed in SYSTEM_CONTEXT."
   ],
   "nonGoals": [
-    "Adding new backend persistence for selected students.",
-    "Changing how backlog groups are computed or displayed beyond what is needed to make the selected student panel visible."
+    "No changes to backend Motoko canisters or persistence.",
+    "No new UI features beyond the abbreviation rule change and its test coverage."
   ],
   "imageRequirements": {
     "required": [],

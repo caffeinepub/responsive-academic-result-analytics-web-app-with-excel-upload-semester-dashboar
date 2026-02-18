@@ -1,38 +1,26 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T05:13:39.458Z",
-  "summary": "Diff shows new state/ref and an effect in SemesterDashboardView to auto-scroll a Student Data Sheet wrapper into view when selectedRollNumber changes. However, due to truncation, the diff summary does not provide enough direct evidence that clicking a roll number inside BacklogDistributionPanel (or selecting from the failed-students dropdown) actually sets selectedRollNumber and renders the StudentDataSheetPanel / Student Not Found panel accordingly.",
+  "generatedAt": "2026-02-18T05:24:10.493Z",
+  "summary": "REQ-1 appears implemented in subject abbreviation derivation, including excluding \"and\" case-insensitively and mapping \"through\" to a custom value (\"TH\"), while keeping formatSubjectCodeWithAbbreviation fallback behavior intact. REQ-2 test coverage is suggested by the addition of a test file and Vitest config, but the diff summary does not include the test contents, so the specific required assertions cannot be confirmed from the provided evidence.",
   "missing_requirements": [
     {
-      "id": "REQ-1",
-      "requirement": "Clicking any roll number button inside Backlog Distribution shows the Student Data Sheet panel (or Student Not Found) for that roll number, and auto-scrolls it into the viewport; the failed-students dropdown selection continues to work and also scrolls the panel into view.",
-      "reason": "Auto-scroll-on-selection is implemented (useEffect on selectedRollNumber), but the diff snippet is truncated before showing the actual render of StudentDataSheetPanel, any Student Not Found panel, and the wiring from BacklogDistributionPanel roll-number clicks and the failed-students dropdown to setSelectedRollNumber. Therefore the core interaction requirements cannot be confirmed from the provided diff evidence.",
+      "id": "REQ-2",
+      "requirement": "Add unit tests for deriveSubjectAbbreviation covering normal multi-word names, names containing \"and\", names containing \"through\", and mixed-case inputs (with assertions showing \"and\" exclusion, custom \"through\" handling, and case-insensitive matching).",
+      "reason": "A test file was added, but its contents are not shown in the diff summary; therefore, the required test cases/assertions cannot be verified from the provided evidence.",
       "evidence": [
-        "frontend/src/features/dashboard/SemesterDashboardView.tsx (truncated; shows auto-scroll effect but not the click wiring/rendering for the panel)"
+        "frontend/src/lib/format/subjectAbbreviation.test.ts",
+        "frontend/vitest.config.ts"
       ]
     }
   ],
-  "hallucinated_features": [
-    {
-      "description": "Project state tracking entries (AR-1, AR-2) added/updated in project_state.json",
-      "reason": "BuildRequest does not ask to add or modify any project tracking/state files; only a frontend behavior change is requested.",
-      "evidence": [
-        "project_state.json"
-      ]
-    },
-    {
-      "description": "Large update to frontend-file-summaries.txt describing many unrelated features (Excel parser changes, charts, styling, dependencies, etc.)",
-      "reason": "BuildRequest is narrowly scoped to auto-show/scroll the Student Data Sheet when selecting a roll number in Backlog Distribution (and keep dropdown behavior). Updating a broad project summary file with unrelated feature descriptions was not requested.",
-      "evidence": [
-        "frontend-file-summaries.txt (truncated)"
-      ]
-    }
-  ],
-  "confidence": 0.54,
+  "hallucinated_features": [],
+  "confidence": 0.64,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/src/features/dashboard/SemesterDashboardView.tsx",
+    "frontend/src/lib/format/subjectAbbreviation.test.ts",
+    "frontend/src/lib/format/subjectAbbreviation.ts",
+    "frontend/vitest.config.ts",
     "project_state.json"
   ]
 }

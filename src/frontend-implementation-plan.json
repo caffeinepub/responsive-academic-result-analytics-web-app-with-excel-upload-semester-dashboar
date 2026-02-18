@@ -1,21 +1,42 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Auto-scroll Student Data Sheet into view on roll number selection",
+  "title": "Adjust subject abbreviation rules and add test coverage",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Auto-bring the Student Data Sheet panel into the viewport whenever a roll number is selected from Backlog Distribution or the failed-students dropdown in Subject Analysis.",
+      "summary": "Update subject abbreviation derivation to ignore the word \"and\" and apply a custom rule for \"through\" while preserving existing formatting fallbacks.",
       "acceptanceCriteria": [
-        "Given the user is on the Dashboard in the Subject Analysis tab, when they click any roll number button inside Backlog Distribution, the Student Data Sheet panel is shown for that roll number (or a Student Not Found panel if no match exists).",
-        "After clicking a roll number in Backlog Distribution, the UI automatically scrolls so that the Student Data Sheet panel is within the viewport without the user needing to manually scroll.",
-        "The existing behavior of selecting a roll number from Subject Analysis (failed students dropdown) continues to work and also results in the Student Data Sheet being brought into view."
+        "For a subject name containing \"and\" (case-insensitive), the abbreviation does not include a letter derived from that word (e.g., \"Research and Development\" -> \"RD\").",
+        "For a subject name containing \"through\" (case-insensitive), the abbreviation uses the agreed custom mapping for that word (not the default single first letter).",
+        "Existing callers of formatSubjectCodeWithAbbreviation continue to render without runtime errors, and subject codes still fall back to code-only display when the subject name is missing or unavailable."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/dashboard/SemesterDashboardView.tsx",
+          "path": "frontend/src/lib/format/subjectAbbreviation.ts",
           "operation": "modify",
-          "description": "Add a stable scroll target for the StudentDataSheetPanel (e.g., a wrapper element with a React ref) and trigger an automatic scrollIntoView when selectedRollNumber is set/changed (including when selectedStudent is null so the 'Student Not Found' panel is shown). Ensure the same scroll behavior occurs for selections coming from both BacklogDistributionPanel roll-number buttons and the SubjectAnalysisList failed-students Select, without altering existing selection logic beyond what is needed for bringing the panel into view."
+          "description": "Update deriveSubjectAbbreviation to: (1) split and normalize words case-insensitively, (2) exclude the word \"and\" from contributing to the abbreviation, and (3) apply a custom token-to-abbreviation mapping for the word \"through\" (e.g., map to \"TH\" rather than default first-letter behavior). Keep existing empty-input handling and ensure formatSubjectCodeWithAbbreviation continues to fall back to code-only when the subject name is missing/unavailable."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Add lightweight unit test coverage for deriveSubjectAbbreviation including \"and\", \"through\", and case-insensitive behavior.",
+      "acceptanceCriteria": [
+        "Tests demonstrate that \"and\" is excluded from abbreviation derivation.",
+        "Tests demonstrate the custom handling for \"through\".",
+        "Tests cover case-insensitive matching for both words."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/lib/format/subjectAbbreviation.test.ts",
+          "operation": "create",
+          "description": "Add unit tests for deriveSubjectAbbreviation covering: normal multi-word input, exclusion of \"and\" (case-insensitive), custom handling for \"through\" (case-insensitive), and mixed-case inputs combining both words."
+        },
+        {
+          "path": "frontend/package.json",
+          "operation": "modify",
+          "description": "If not already present in this repo, wire in the existing codebase's lightweight test runner setup so the new deriveSubjectAbbreviation tests can be executed (e.g., add/adjust a test script and ensure the chosen runner can discover *.test.ts files). Keep changes minimal and limited to enabling/running the added tests."
         }
       ]
     }

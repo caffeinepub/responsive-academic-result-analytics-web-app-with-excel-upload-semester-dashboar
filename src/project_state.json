@@ -7,10 +7,18 @@
   "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-when-a-user-clicks-a-roll-number-in-dashboard-subject-analysis-backlog-distribution-ensure-the-selected-student-s-student-data-sheet-becomes-immediately-visible-i-e-the-page-should-automatically-bring-the-student-data-sheet-panel-into-view-after-selection",
-      "title": "When a user clicks a roll number in Dashboard > Subject Analysis > Backlog Distribution, ensure the selected student's Student Data Sheet becomes immediately visible (i.e., the page should automatically bring the Student Data Sheet panel into view after selection).",
+      "id": "feature-update-subject-abbreviation-generation-so-that-the-word-and-is-not-used-when-deriving-abbreviations-and-the-word-through-is-handled-with-a-custom-rule-instead-of-the-default-first-letter-of-each-word-behavior",
+      "title": "Update subject abbreviation generation so that the word \"and\" is not used when deriving abbreviations, and the word \"through\" is handled with a custom rule instead of the default \"first letter of each word\" behavior.",
       "reqIds": [
         "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-unit-tests-or-equivalent-lightweight-test-coverage-used-in-this-codebase-for-derivesubjectabbreviation-covering-normal-multi-word-names-names-containing-and-names-containing-through-and-mixed-case-inputs",
+      "title": "Add unit tests (or equivalent lightweight test coverage used in this codebase) for deriveSubjectAbbreviation covering: normal multi-word names, names containing \"and\", names containing \"through\", and mixed-case inputs.",
+      "reqIds": [
+        "REQ-2"
       ],
       "version": 1
     }
@@ -18,7 +26,7 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Backlog distribution: when clicking a student's roll number, display that student's data/details",
+      "summary": "Adjust abbreviation generation rules to exclude words like \"and\" and handle \"through\" differently",
       "reqIds": [],
       "status": "pending"
     }

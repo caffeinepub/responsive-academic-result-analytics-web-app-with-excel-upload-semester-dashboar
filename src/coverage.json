@@ -1,24 +1,36 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T05:13:39.460Z",
+  "generatedAt": "2026-02-18T05:24:10.497Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 2,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "When a user clicks a roll number in Dashboard > Subject Analysis > Backlog Distribution, ensure the selected student's Student Data Sheet becomes immediately visible (i.e., the page should automatically bring the Student Data Sheet panel into view after selection).",
+        "summary": "Update subject abbreviation generation so that the word \"and\" is not used when deriving abbreviations, and the word \"through\" is handled with a custom rule instead of the default \"first letter of each word\" behavior.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/features/dashboard/SemesterDashboardView.tsx"
+          "frontend/src/lib/format/subjectAbbreviation.ts"
         ],
         "matchedFiles": [
-          "frontend/src/features/dashboard/SemesterDashboardView.tsx"
+          "frontend/src/lib/format/subjectAbbreviation.ts"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Add unit tests (or equivalent lightweight test coverage used in this codebase) for deriveSubjectAbbreviation covering: normal multi-word names, names containing \"and\", names containing \"through\", and mixed-case inputs.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/lib/format/subjectAbbreviation.test.ts",
+          "frontend/package.json"
+        ],
+        "matchedFiles": [
+          "frontend/src/lib/format/subjectAbbreviation.test.ts"
         ]
       }
     ]
@@ -28,7 +40,9 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/features/dashboard/SemesterDashboardView.tsx",
+    "frontend/src/lib/format/subjectAbbreviation.test.ts",
+    "frontend/src/lib/format/subjectAbbreviation.ts",
+    "frontend/vitest.config.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-when-a-user-clicks-a-roll-number-in-dashboard-subject-analysis-backlog-distribution-ensure-the-selected-student-s-student-data-sheet-becomes-immediately-visible-i-e-the-page-should-automatically-bring-the-student-data-sheet-panel-into-view-after-selection",
-      "featureTitle": "When a user clicks a roll number in Dashboard > Subject Analysis > Backlog Distribution, ensure the selected student's Student Data Sheet becomes immediately visible (i.e., the page should automatically bring the Student Data Sheet panel into view after selection).",
+      "featureId": "feature-update-subject-abbreviation-generation-so-that-the-word-and-is-not-used-when-deriving-abbreviations-and-the-word-through-is-handled-with-a-custom-rule-instead-of-the-default-first-letter-of-each-word-behavior",
+      "featureTitle": "Update subject abbreviation generation so that the word \"and\" is not used when deriving abbreviations, and the word \"through\" is handled with a custom rule instead of the default \"first letter of each word\" behavior.",
       "files": [
-        "frontend/src/features/dashboard/SemesterDashboardView.tsx"
+        "frontend/src/lib/format/subjectAbbreviation.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -16,6 +16,24 @@
       ],
       "testIds": [
         "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-unit-tests-or-equivalent-lightweight-test-coverage-used-in-this-codebase-for-derivesubjectabbreviation-covering-normal-multi-word-names-names-containing-and-names-containing-through-and-mixed-case-inputs",
+      "featureTitle": "Add unit tests (or equivalent lightweight test coverage used in this codebase) for deriveSubjectAbbreviation covering: normal multi-word names, names containing \"and\", names containing \"through\", and mixed-case inputs.",
+      "files": [
+        "frontend/src/lib/format/subjectAbbreviation.test.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
       ],
       "confidence": "high"
     }
