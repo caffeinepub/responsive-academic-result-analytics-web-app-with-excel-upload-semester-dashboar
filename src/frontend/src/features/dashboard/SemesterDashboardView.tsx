@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -43,6 +43,7 @@ export default function SemesterDashboardView({
   onDepartmentChange,
 }: SemesterDashboardViewProps) {
   const [selectedRollNumber, setSelectedRollNumber] = useState<string | null>(null);
+  const studentDataSheetRef = useRef<HTMLDivElement>(null);
   
   const semesters = Array.from(analytics.keys()).sort();
   const hasMultipleSemesters = semesters.length > 1;
@@ -71,6 +72,19 @@ export default function SemesterDashboardView({
       s => s.rollNumber.toLowerCase().trim() === selectedRollNumber.toLowerCase().trim()
     ) || null;
   }, [selectedRollNumber, selectedSemesterStudents]);
+
+  // Auto-scroll to Student Data Sheet when a roll number is selected
+  useEffect(() => {
+    if (selectedRollNumber && studentDataSheetRef.current) {
+      // Small delay to ensure the panel is rendered before scrolling
+      setTimeout(() => {
+        studentDataSheetRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        });
+      }, 100);
+    }
+  }, [selectedRollNumber]);
 
   // Handle student selection from dropdown or backlog distribution
   const handleFailedStudentSelect = (rollNumber: string) => {
@@ -250,11 +264,13 @@ export default function SemesterDashboardView({
 
         <TabsContent value="analysis" className="space-y-4">
           {selectedRollNumber && (
-            <StudentDataSheetPanel
-              student={selectedStudent}
-              subjectCatalog={parsedData.subjectCatalog}
-              onClose={handleCloseDataSheet}
-            />
+            <div ref={studentDataSheetRef}>
+              <StudentDataSheetPanel
+                student={selectedStudent}
+                subjectCatalog={parsedData.subjectCatalog}
+                onClose={handleCloseDataSheet}
+              />
+            </div>
           )}
 
           <Card>

@@ -1,26 +1,16 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Student/subject analysis app with student sheet view; add subject name shortcuts next to subject codes and fix scrolling in Subject Analysis > View Students.",
+  "summary": "New project",
   "architectural_notes": [],
-  "known_issues": [
-    "Subject Analysis > View Students data is currently not scrollable."
-  ],
+  "known_issues": [],
   "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-display-a-short-subject-name-abbreviation-alongside-each-subject-code-everywhere-subject-codes-are-shown-in-the-dashboard-ui-e-g-show-digital-electronics-de-next-to-the-subject-code-the-abbreviation-must-be-derived-from-the-subject-name-in-the-existing-subject-catalog-and-should-be-consistent-across-all-places-it-appears",
-      "title": "Display a short subject-name abbreviation alongside each subject code everywhere subject codes are shown in the Dashboard UI (e.g., show “Digital Electronics (DE)” next to the subject code). The abbreviation must be derived from the subject name in the existing subject catalog and should be consistent across all places it appears.",
+      "id": "feature-when-a-user-clicks-a-roll-number-in-dashboard-subject-analysis-backlog-distribution-ensure-the-selected-student-s-student-data-sheet-becomes-immediately-visible-i-e-the-page-should-automatically-bring-the-student-data-sheet-panel-into-view-after-selection",
+      "title": "When a user clicks a roll number in Dashboard > Subject Analysis > Backlog Distribution, ensure the selected student's Student Data Sheet becomes immediately visible (i.e., the page should automatically bring the Student Data Sheet panel into view after selection).",
       "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-fix-the-failed-students-view-failed-students-list-in-dashboard-subject-analysis-so-that-the-list-is-scrollable-when-there-are-many-students-the-user-must-be-able-to-scroll-within-the-list-to-reach-all-roll-numbers",
-      "title": "Fix the failed-students “View failed students” list in Dashboard > Subject Analysis so that the list is scrollable when there are many students (the user must be able to scroll within the list to reach all roll numbers).",
-      "reqIds": [
-        "REQ-4"
+        "REQ-1"
       ],
       "version": 1
     }
@@ -28,13 +18,7 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Display subject name shortcut/abbreviation alongside each subject code (e.g., Digital Electronics → DE).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Fix Subject Analysis > View Students list/table not scrolling; make the student data area scrollable.",
+      "summary": "Backlog distribution: when clicking a student's roll number, display that student's data/details",
       "reqIds": [],
       "status": "pending"
     }

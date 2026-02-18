@@ -1,69 +1,39 @@
 {
   "kind": "build_request",
-  "title": "Show subject name abbreviations next to subject codes and fix non-scrollable failed-student list",
+  "title": "Show student data sheet when selecting roll number in Backlog Distribution",
   "projectName": "Academic Result Analytics",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-3",
-      "text": "Display a short subject-name abbreviation alongside each subject code everywhere subject codes are shown in the Dashboard UI (e.g., show “Digital Electronics (DE)” next to the subject code). The abbreviation must be derived from the subject name in the existing subject catalog and should be consistent across all places it appears.",
+      "id": "REQ-1",
+      "text": "When a user clicks a roll number in Dashboard > Subject Analysis > Backlog Distribution, ensure the selected student's Student Data Sheet becomes immediately visible (i.e., the page should automatically bring the Student Data Sheet panel into view after selection).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-4"
         ],
         "quotes": [
-          "every where there is the subject code beside that give the short cut of subject name five live digital electronics DE like that"
+          "in backlog distribution also when we click on the roll no the student data should be visible"
         ]
       },
       "acceptanceCriteria": [
-        "In Dashboard > Subject Analysis list items, the subject code display includes a short abbreviation derived from the subject name (e.g., “Digital Electronics” -> “DE”).",
-        "In Student Data Sheet panel, subject codes shown in (a) Backlog Subjects badges and (b) the Subject-wise Results table include the same abbreviation format.",
-        "In Visualizations where subject codes are used as labels (e.g., subject-wise backlog bar chart labels), the displayed label includes the same abbreviation format.",
-        "If a subject name is missing/unavailable, the UI does not crash and uses a safe fallback (e.g., no abbreviation shown).",
-        "All user-facing labels added/changed are in English."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Fix the failed-students “View failed students” list in Dashboard > Subject Analysis so that the list is scrollable when there are many students (the user must be able to scroll within the list to reach all roll numbers).",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "and in subject analysis in view students the data is unable to scroll and make it to scroll"
-        ]
-      },
-      "acceptanceCriteria": [
-        "When a subject has many failed students, opening “View failed students” shows a dropdown/list area with a maximum height and an internal vertical scrollbar (mouse wheel/trackpad scroll works).",
-        "All failed student roll numbers remain selectable even when the list is long.",
-        "The scroll fix does not break the existing selection behavior (selecting a roll number still opens the Student Data Sheet for that student)."
+        "Given the user is on the Dashboard in the Subject Analysis tab, when they click any roll number button inside Backlog Distribution, the Student Data Sheet panel is shown for that roll number (or a Student Not Found panel if no match exists).",
+        "After clicking a roll number in Backlog Distribution, the UI automatically scrolls so that the Student Data Sheet panel is within the viewport without the user needing to manually scroll.",
+        "The existing behavior of selecting a roll number from Subject Analysis (failed students dropdown) continues to work and also results in the Student Data Sheet being brought into view."
       ]
     }
   ],
   "constraints": [
-    "Do not modify files under frontend/src/components/ui (compose them via props/className only).",
-    "Do not modify any files listed in frontend.immutablePaths.",
-    "Backend must remain single-actor; no new backend services."
+    "Do not edit files under frontend/src/components/ui (Shadcn UI sources are read-only).",
+    "Do not modify frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
+    "Keep the backend as-is (no backend changes required for this feature)."
   ],
   "nonGoals": [
-    "Adding or changing backend data storage or schemas for subjects.",
-    "Manually curating subject abbreviations; abbreviations should be computed from the existing subject name text."
+    "Adding new backend persistence for selected students.",
+    "Changing how backlog groups are computed or displayed beyond what is needed to make the selected student panel visible."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

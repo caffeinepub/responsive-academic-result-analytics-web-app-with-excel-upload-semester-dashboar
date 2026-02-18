@@ -1,41 +1,24 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T05:07:35.919Z",
+  "generatedAt": "2026-02-18T05:13:39.460Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
-    "implemented": 2,
+    "total": 1,
+    "implemented": 1,
     "items": [
       {
-        "id": "REQ-3",
-        "summary": "Display a short subject-name abbreviation alongside each subject code everywhere subject codes are shown in the Dashboard UI (e.g., show “Digital Electronics (DE)” next to the subject code). The abbreviation must be derived from the subject name in the existing subject catalog and should be consistent across all places it appears.",
+        "id": "REQ-1",
+        "summary": "When a user clicks a roll number in Dashboard > Subject Analysis > Backlog Distribution, ensure the selected student's Student Data Sheet becomes immediately visible (i.e., the page should automatically bring the Student Data Sheet panel into view after selection).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/lib/format/subjectAbbreviation.ts",
-          "frontend/src/features/dashboard/SubjectAnalysisList.tsx",
-          "frontend/src/features/dashboard/StudentDataSheetPanel.tsx",
           "frontend/src/features/dashboard/SemesterDashboardView.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/lib/format/subjectAbbreviation.ts",
-          "frontend/src/features/dashboard/SubjectAnalysisList.tsx",
-          "frontend/src/features/dashboard/StudentDataSheetPanel.tsx",
           "frontend/src/features/dashboard/SemesterDashboardView.tsx"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "Fix the failed-students “View failed students” list in Dashboard > Subject Analysis so that the list is scrollable when there are many students (the user must be able to scroll within the list to reach all roll numbers).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/features/dashboard/SubjectAnalysisList.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/features/dashboard/SubjectAnalysisList.tsx"
         ]
       }
     ]
@@ -46,9 +29,6 @@
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/features/dashboard/SemesterDashboardView.tsx",
-    "frontend/src/features/dashboard/StudentDataSheetPanel.tsx",
-    "frontend/src/features/dashboard/SubjectAnalysisList.tsx",
-    "frontend/src/lib/format/subjectAbbreviation.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,51 +1,38 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T05:07:35.917Z",
-  "summary": "REQ-4 (scrollable failed-students list) appears implemented via a max-height + overflow scroll on the failed-students Select dropdown content. REQ-3 (subject code + derived abbreviation shown everywhere subject codes appear in Dashboard UI) is partially implemented in Subject Analysis list and some Student Data Sheet logic, but the diff evidence does not confirm coverage for all required locations (notably visualizations and all subject-code instances such as backlog badges / subject-wise results table rendering). The diff summary also indicates several unrelated frontend changes (department filtering, Excel parsing enhancements, chart behavior changes, dependency additions) that were not requested.",
+  "generatedAt": "2026-02-18T05:13:39.458Z",
+  "summary": "Diff shows new state/ref and an effect in SemesterDashboardView to auto-scroll a Student Data Sheet wrapper into view when selectedRollNumber changes. However, due to truncation, the diff summary does not provide enough direct evidence that clicking a roll number inside BacklogDistributionPanel (or selecting from the failed-students dropdown) actually sets selectedRollNumber and renders the StudentDataSheetPanel / Student Not Found panel accordingly.",
   "missing_requirements": [
     {
-      "id": "REQ-3",
-      "requirement": "Display a short subject-name abbreviation alongside each subject code everywhere subject codes are shown in the Dashboard UI (Subject Analysis list items, Student Data Sheet backlog badges + subject-wise results table, and visualizations). Must be consistent and safe when subject name missing.",
-      "reason": "The diff shows abbreviation formatting added and used in SubjectAnalysisList and computed in StudentDataSheetPanel, but does not provide evidence that (a) Student Data Sheet backlog subject badges and the Subject-wise Results table actually render the formatted codeWithAbbrev, and (b) visualization labels (e.g., bar chart labels) use the same formatted label. SemesterDashboardView is truncated and chart components shown are not modified in the provided modified-file list.",
+      "id": "REQ-1",
+      "requirement": "Clicking any roll number button inside Backlog Distribution shows the Student Data Sheet panel (or Student Not Found) for that roll number, and auto-scrolls it into the viewport; the failed-students dropdown selection continues to work and also scrolls the panel into view.",
+      "reason": "Auto-scroll-on-selection is implemented (useEffect on selectedRollNumber), but the diff snippet is truncated before showing the actual render of StudentDataSheetPanel, any Student Not Found panel, and the wiring from BacklogDistributionPanel roll-number clicks and the failed-students dropdown to setSelectedRollNumber. Therefore the core interaction requirements cannot be confirmed from the provided diff evidence.",
       "evidence": [
-        "frontend/src/lib/format/subjectAbbreviation.ts",
-        "frontend/src/features/dashboard/SubjectAnalysisList.tsx",
-        "frontend/src/features/dashboard/StudentDataSheetPanel.tsx",
-        "frontend/src/features/dashboard/SemesterDashboardView.tsx (truncated; visualization label usage not evidenced)"
+        "frontend/src/features/dashboard/SemesterDashboardView.tsx (truncated; shows auto-scroll effect but not the click wiring/rendering for the panel)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Department/branch filtering and department-aware behaviors (UI dropdown, search behavior, parsing department column, ParsedData changes).",
-      "reason": "BuildRequest only asks for subject abbreviations next to subject codes and a scroll fix for the failed-students list. The diff summary text indicates additional department-related features and data extraction that are not part of REQ-3/REQ-4.",
+      "description": "Project state tracking entries (AR-1, AR-2) added/updated in project_state.json",
+      "reason": "BuildRequest does not ask to add or modify any project tracking/state files; only a frontend behavior change is requested.",
       "evidence": [
-        "frontend-file-summaries.txt (entries describing department dropdown filter, department-aware search, parseExcelFile extracting department/branch, appFlowTypes including optional department)"
+        "project_state.json"
       ]
     },
     {
-      "description": "Excel parsing enhancements beyond subject abbreviations (wide/long format support, SheetJS CDN load, xlsx dependency changes).",
-      "reason": "Not requested by REQ-3/REQ-4; appears as additional functionality in the diff summary.",
+      "description": "Large update to frontend-file-summaries.txt describing many unrelated features (Excel parser changes, charts, styling, dependencies, etc.)",
+      "reason": "BuildRequest is narrowly scoped to auto-show/scroll the Student Data Sheet when selecting a roll number in Backlog Distribution (and keep dropdown behavior). Updating a broad project summary file with unrelated feature descriptions was not requested.",
       "evidence": [
-        "frontend-file-summaries.txt (parseExcelFile dual-mode support; index.html loads SheetJS via CDN; frontend/package.json adds xlsx)"
-      ]
-    },
-    {
-      "description": "Chart component behavior changes (dynamic width calculation, horizontal scrolling for large datasets).",
-      "reason": "Not requested; REQ-3 only requires label formatting for subject codes in visualizations, not chart layout/scroll behavior changes.",
-      "evidence": [
-        "frontend-file-summaries.txt (frontend/src/components/charts/SimpleBarChart.tsx description)"
+        "frontend-file-summaries.txt (truncated)"
       ]
     }
   ],
-  "confidence": 0.62,
+  "confidence": 0.54,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/src/features/dashboard/SemesterDashboardView.tsx",
-    "frontend/src/features/dashboard/StudentDataSheetPanel.tsx",
-    "frontend/src/features/dashboard/SubjectAnalysisList.tsx",
-    "frontend/src/lib/format/subjectAbbreviation.ts",
     "project_state.json"
   ]
 }

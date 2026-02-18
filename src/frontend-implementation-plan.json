@@ -1,54 +1,21 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Dashboard subject-code abbreviations + scrollable failed-students list",
+  "title": "Auto-scroll Student Data Sheet into view on roll number selection",
   "requirements": [
     {
-      "id": "REQ-3",
-      "summary": "Compute and display consistent subject-name abbreviations alongside subject codes across the Dashboard UI (lists, student sheet, and charts) with safe fallbacks.",
+      "id": "REQ-1",
+      "summary": "Auto-bring the Student Data Sheet panel into the viewport whenever a roll number is selected from Backlog Distribution or the failed-students dropdown in Subject Analysis.",
       "acceptanceCriteria": [
-        "In Dashboard > Subject Analysis list items, the subject code display includes a short abbreviation derived from the subject name (e.g., “Digital Electronics” -> “DE”).",
-        "In Student Data Sheet panel, subject codes shown in (a) Backlog Subjects badges and (b) the Subject-wise Results table include the same abbreviation format.",
-        "In Visualizations where subject codes are used as labels (e.g., subject-wise backlog bar chart labels), the displayed label includes the same abbreviation format.",
-        "If a subject name is missing/unavailable, the UI does not crash and uses a safe fallback (e.g., no abbreviation shown).",
-        "All user-facing labels added/changed are in English."
+        "Given the user is on the Dashboard in the Subject Analysis tab, when they click any roll number button inside Backlog Distribution, the Student Data Sheet panel is shown for that roll number (or a Student Not Found panel if no match exists).",
+        "After clicking a roll number in Backlog Distribution, the UI automatically scrolls so that the Student Data Sheet panel is within the viewport without the user needing to manually scroll.",
+        "The existing behavior of selecting a roll number from Subject Analysis (failed students dropdown) continues to work and also results in the Student Data Sheet being brought into view."
       ],
       "file_operations": [
-        {
-          "path": "frontend/src/lib/format/subjectAbbreviation.ts",
-          "operation": "create",
-          "description": "Add shared utilities to (1) derive a short abbreviation from a subject name string (e.g., initial letters) and (2) format a subject code label using the existing subjectCatalog (code + name-derived abbreviation), including safe fallbacks when the name is missing."
-        },
-        {
-          "path": "frontend/src/features/dashboard/SubjectAnalysisList.tsx",
-          "operation": "modify",
-          "description": "Use the shared subject-label formatter to render subject code + abbreviation consistently in the Subject Analysis list (alongside the subject name display). Keep fallbacks when subjectCatalog lacks an entry. Uses existing shadcn-ui Select/Badge components; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/features/dashboard/StudentDataSheetPanel.tsx",
-          "operation": "modify",
-          "description": "Update (a) Backlog Subjects badges and (b) the Subject-wise Results table 'Subject Code' cells to display code + the same computed abbreviation derived from subjectCatalog. Ensure missing names do not crash and omit abbreviation when unavailable. Uses existing shadcn-ui Badge/Table components; verify the component's usage instructions before implementing."
-        },
         {
           "path": "frontend/src/features/dashboard/SemesterDashboardView.tsx",
           "operation": "modify",
-          "description": "When preparing visualization data for subject-wise backlog charts, replace raw subject-code labels with the shared formatted subject label (code + abbreviation) derived from parsedData.subjectCatalog, while preserving the underlying counts."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Make the Dashboard > Subject Analysis 'View failed students' list scrollable for long lists without breaking selection behavior.",
-      "acceptanceCriteria": [
-        "When a subject has many failed students, opening “View failed students” shows a dropdown/list area with a maximum height and an internal vertical scrollbar (mouse wheel/trackpad scroll works).",
-        "All failed student roll numbers remain selectable even when the list is long.",
-        "The scroll fix does not break the existing selection behavior (selecting a roll number still opens the Student Data Sheet for that student)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/features/dashboard/SubjectAnalysisList.tsx",
-          "operation": "modify",
-          "description": "Adjust the shadcn-ui SelectContent usage via props/className to enforce a max height and vertical scrolling (e.g., overflow-y-auto) for long failed-student lists, without changing selection behavior. Do not modify files under frontend/src/components/ui (compose via props/className only). Verify the component's usage instructions before implementing."
+          "description": "Add a stable scroll target for the StudentDataSheetPanel (e.g., a wrapper element with a React ref) and trigger an automatic scrollIntoView when selectedRollNumber is set/changed (including when selectedStudent is null so the 'Student Not Found' panel is shown). Ensure the same scroll behavior occurs for selections coming from both BacklogDistributionPanel roll-number buttons and the SubjectAnalysisList failed-students Select, without altering existing selection logic beyond what is needed for bringing the panel into view."
         }
       ]
     }

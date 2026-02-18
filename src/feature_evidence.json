@@ -2,13 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-display-a-short-subject-name-abbreviation-alongside-each-subject-code-everywhere-subject-codes-are-shown-in-the-dashboard-ui-e-g-show-digital-electronics-de-next-to-the-subject-code-the-abbreviation-must-be-derived-from-the-subject-name-in-the-existing-subject-catalog-and-should-be-consistent-across-all-places-it-appears",
-      "featureTitle": "Display a short subject-name abbreviation alongside each subject code everywhere subject codes are shown in the Dashboard UI (e.g., show “Digital Electronics (DE)” next to the subject code). The abbreviation must be derived from the subject name in the existing subject catalog and should be consistent across all places it appears.",
+      "featureId": "feature-when-a-user-clicks-a-roll-number-in-dashboard-subject-analysis-backlog-distribution-ensure-the-selected-student-s-student-data-sheet-becomes-immediately-visible-i-e-the-page-should-automatically-bring-the-student-data-sheet-panel-into-view-after-selection",
+      "featureTitle": "When a user clicks a roll number in Dashboard > Subject Analysis > Backlog Distribution, ensure the selected student's Student Data Sheet becomes immediately visible (i.e., the page should automatically bring the Student Data Sheet panel into view after selection).",
       "files": [
-        "frontend/src/features/dashboard/SemesterDashboardView.tsx",
-        "frontend/src/features/dashboard/StudentDataSheetPanel.tsx",
-        "frontend/src/features/dashboard/SubjectAnalysisList.tsx",
-        "frontend/src/lib/format/subjectAbbreviation.ts"
+        "frontend/src/features/dashboard/SemesterDashboardView.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -18,25 +15,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-3"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-fix-the-failed-students-view-failed-students-list-in-dashboard-subject-analysis-so-that-the-list-is-scrollable-when-there-are-many-students-the-user-must-be-able-to-scroll-within-the-list-to-reach-all-roll-numbers",
-      "featureTitle": "Fix the failed-students “View failed students” list in Dashboard > Subject Analysis so that the list is scrollable when there are many students (the user must be able to scroll within the list to reach all roll numbers).",
-      "files": [
-        "frontend/src/features/dashboard/SubjectAnalysisList.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-4"
+        "REQ-1"
       ],
       "confidence": "high"
     }
