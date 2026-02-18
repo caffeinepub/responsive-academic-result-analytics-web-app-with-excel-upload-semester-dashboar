@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ParsedData, SemesterAnalytics } from '@/lib/state/appFlowTypes';
 import { formatNumber, formatPercentage } from '@/lib/format/numberFormat';
+import { formatSubjectCodeWithAbbreviation } from '@/lib/format/subjectAbbreviation';
 import SimpleBarChart from '@/components/charts/SimpleBarChart';
 import SimplePieChart from '@/components/charts/SimplePieChart';
 import StudentResultLookupCard from './StudentResultLookupCard';
@@ -133,7 +134,7 @@ export default function SemesterDashboardView({
 
   const subjectBacklogData = Object.entries(semesterData.subjectWiseBacklogs)
     .map(([subject, count]) => ({
-      name: subject,
+      name: formatSubjectCodeWithAbbreviation(subject, parsedData.subjectCatalog),
       value: count,
     }))
     .sort((a, b) => b.value - a.value);
@@ -175,136 +176,79 @@ export default function SemesterDashboardView({
         </div>
       )}
 
-      {/* Student Result Lookup Section */}
       <StudentResultLookupCard
-        filteredStudents={parsedData.students}
         allStudents={allParsedData.students}
+        filteredStudents={parsedData.students}
         selectedDepartment={selectedDepartment}
       />
 
-      {hasMultipleSemesters && (
-        <div className="flex flex-wrap gap-2">
-          {semesters.map((sem) => (
-            <Button
-              key={sem}
-              variant={sem === selectedSemester ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => onSemesterChange(sem)}
-            >
-              {sem}
-            </Button>
-          ))}
-        </div>
-      )}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatNumber(semesterData.totalStudents)}</div>
+            <p className="text-xs text-muted-foreground">
+              Enrolled in {selectedSemester}
+            </p>
+          </CardContent>
+        </Card>
 
-      <Tabs defaultValue="summary" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 lg:w-auto">
-          <TabsTrigger value="summary">Summary</TabsTrigger>
-          <TabsTrigger value="subjects">Subject Analysis</TabsTrigger>
-          <TabsTrigger value="graphs">Visualizations</TabsTrigger>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pass Rate</CardTitle>
+            <TrendingUp className="h-4 w-4 text-chart-2" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatPercentage(semesterData.passPercentage)}</div>
+            <p className="text-xs text-muted-foreground">
+              {formatNumber(semesterData.passedCount)} students passed
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Failure Rate</CardTitle>
+            <TrendingDown className="h-4 w-4 text-chart-1" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatPercentage(semesterData.failurePercentage)}</div>
+            <p className="text-xs text-muted-foreground">
+              {formatNumber(semesterData.failedCount)} students failed
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Backlogs</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-destructive" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatNumber(semesterData.totalBacklogs)}</div>
+            <p className="text-xs text-muted-foreground">
+              {formatNumber(semesterData.studentsWithBacklogs)} students affected
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="analysis" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="analysis">
+            <BookOpen className="mr-2 h-4 w-4" />
+            Subject Analysis
+          </TabsTrigger>
+          <TabsTrigger value="visualizations">
+            <BarChart3 className="mr-2 h-4 w-4" />
+            Visualizations
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="summary" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{formatNumber(semesterData.totalStudents)}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Enrolled in {selectedSemester}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Pass Rate</CardTitle>
-                <TrendingUp className="h-4 w-4 text-chart-2" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-chart-2">
-                  {formatPercentage(semesterData.passPercentage)}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {formatNumber(semesterData.passedCount)} students passed
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Failure Rate</CardTitle>
-                <TrendingDown className="h-4 w-4 text-chart-1" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-chart-1">
-                  {formatPercentage(semesterData.failurePercentage)}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {formatNumber(semesterData.failedCount)} students failed
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Backlogs</CardTitle>
-                <AlertTriangle className="h-4 w-4 text-destructive" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{formatNumber(semesterData.totalBacklogs)}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {formatNumber(semesterData.studentsWithBacklogs)} students affected
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Performance Overview</CardTitle>
-              <CardDescription>Key metrics for {selectedSemester}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Students Passed</span>
-                    <Badge variant="outline" className="bg-chart-2/10 text-chart-2 border-chart-2/20">
-                      {formatNumber(semesterData.passedCount)}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Students Failed</span>
-                    <Badge variant="outline" className="bg-chart-1/10 text-chart-1 border-chart-1/20">
-                      {formatNumber(semesterData.failedCount)}
-                    </Badge>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Students with Backlogs</span>
-                    <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">
-                      {formatNumber(semesterData.studentsWithBacklogs)}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Total Backlog Count</span>
-                    <Badge variant="outline">
-                      {formatNumber(semesterData.totalBacklogs)}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="subjects" className="space-y-4">
-          {/* Student Data Sheet Panel */}
+        <TabsContent value="analysis" className="space-y-4">
           {selectedRollNumber && (
             <StudentDataSheetPanel
               student={selectedStudent}
@@ -317,7 +261,7 @@ export default function SemesterDashboardView({
             <CardHeader>
               <CardTitle>Subject-wise Backlog Analysis</CardTitle>
               <CardDescription>
-                Number of students with backlogs in each subject
+                Detailed breakdown of backlogs by subject with failed student lists
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -330,20 +274,30 @@ export default function SemesterDashboardView({
             </CardContent>
           </Card>
 
-          <BacklogDistributionPanel 
-            backlogGroups={backlogGroups}
-            onRollNumberSelect={handleFailedStudentSelect}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle>Backlog Distribution</CardTitle>
+              <CardDescription>
+                Students grouped by number of backlogs
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BacklogDistributionPanel
+                backlogGroups={backlogGroups}
+                onRollNumberSelect={handleFailedStudentSelect}
+              />
+            </CardContent>
+          </Card>
         </TabsContent>
 
-        <TabsContent value="graphs" className="space-y-4">
+        <TabsContent value="visualizations" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Pass/Fail Distribution</CardTitle>
                 <CardDescription>Overall student performance</CardDescription>
               </CardHeader>
-              <CardContent className="flex justify-center">
+              <CardContent>
                 <SimplePieChart data={passFailData} />
               </CardContent>
             </Card>
@@ -351,16 +305,10 @@ export default function SemesterDashboardView({
             <Card>
               <CardHeader>
                 <CardTitle>Subject-wise Backlogs</CardTitle>
-                <CardDescription>Top subjects with most backlogs</CardDescription>
+                <CardDescription>Number of students with backlogs per subject</CardDescription>
               </CardHeader>
               <CardContent>
-                {subjectBacklogData.length > 0 ? (
-                  <SimpleBarChart data={subjectBacklogData.slice(0, 10)} />
-                ) : (
-                  <p className="text-center text-muted-foreground py-8">
-                    No backlog data available
-                  </p>
-                )}
+                <SimpleBarChart data={subjectBacklogData} />
               </CardContent>
             </Card>
           </div>

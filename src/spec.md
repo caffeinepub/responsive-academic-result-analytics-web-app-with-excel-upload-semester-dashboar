@@ -1,12 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Make roll numbers shown in the Subject Analysis “Backlog Distribution” panel clickable so selecting one opens the existing Student Data Sheet for that student.
+**Goal:** Improve the Dashboard UI by consistently showing subject-name abbreviations next to subject codes, and make the “View failed students” list scrollable for long lists.
 
 **Planned changes:**
-- Render each roll number in the Backlog Distribution panel as an interactive control with clear hover/focus states.
-- Add a roll-number selection callback prop (e.g., `onRollNumberSelect`) to `BacklogDistributionPanel` and invoke it when a roll number is clicked.
-- Wire `SemesterDashboardView` to pass its existing roll-number selection handler to `BacklogDistributionPanel`, keeping `StudentDataSheetPanel` rendered/controlled only in `SemesterDashboardView`.
-- Reuse existing Student Data Sheet behavior: show the student’s sheet when found, or the existing “Student Not Found” state when not found, without breaking the failed-students dropdown behavior.
+- Derive a short abbreviation from each subject’s name in the existing subject catalog and display it alongside the subject code across the Dashboard (Subject Analysis list, Student Data Sheet backlog badges, Subject-wise Results table, and visualization labels), with a safe fallback when the subject name is missing.
+- Update the “View failed students” list in Dashboard > Subject Analysis to have a fixed maximum height with an internal vertical scrollbar, without breaking existing click/selection behavior.
 
-**User-visible outcome:** In Dashboard > Subject Analysis, clicking any roll number in Backlog Distribution opens the same Student Data Sheet panel as selecting a roll number from the failed-students dropdown, including the existing “Student Not Found” behavior when applicable.
+**User-visible outcome:** Subject codes throughout the Dashboard show a consistent subject-name abbreviation (e.g., “Digital Electronics (DE)”), and the “View failed students” list can be scrolled to access and select all roll numbers.

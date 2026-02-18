@@ -2,11 +2,13 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-in-the-dashboard-subject-analysis-tab-update-the-backlog-distribution-panel-so-that-each-displayed-roll-number-is-clickable-and-selecting-it-opens-the-full-student-data-sheet-for-that-student-using-the-same-behavior-as-selecting-a-roll-number-from-the-subject-analysis-failed-students-dropdown",
-      "featureTitle": "In the Dashboard > Subject Analysis tab, update the Backlog Distribution panel so that each displayed roll number is clickable and selecting it opens the full Student Data Sheet for that student (using the same behavior as selecting a roll number from the Subject Analysis failed-students dropdown).",
+      "featureId": "feature-display-a-short-subject-name-abbreviation-alongside-each-subject-code-everywhere-subject-codes-are-shown-in-the-dashboard-ui-e-g-show-digital-electronics-de-next-to-the-subject-code-the-abbreviation-must-be-derived-from-the-subject-name-in-the-existing-subject-catalog-and-should-be-consistent-across-all-places-it-appears",
+      "featureTitle": "Display a short subject-name abbreviation alongside each subject code everywhere subject codes are shown in the Dashboard UI (e.g., show “Digital Electronics (DE)” next to the subject code). The abbreviation must be derived from the subject name in the existing subject catalog and should be consistent across all places it appears.",
       "files": [
-        "frontend/src/features/dashboard/BacklogDistributionPanel.tsx",
-        "frontend/src/features/dashboard/SemesterDashboardView.tsx"
+        "frontend/src/features/dashboard/SemesterDashboardView.tsx",
+        "frontend/src/features/dashboard/StudentDataSheetPanel.tsx",
+        "frontend/src/features/dashboard/SubjectAnalysisList.tsx",
+        "frontend/src/lib/format/subjectAbbreviation.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -16,16 +18,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-1"
+        "REQ-3"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-callback-interface-between-semesterdashboardview-and-backlogdistributionpanel-e-g-an-onrollnumberselect-prop-so-the-backlog-distribution-panel-can-notify-the-dashboard-of-the-clicked-roll-number-without-duplicating-student-data-sheet-rendering-logic-inside-backlogdistributionpanel",
-      "featureTitle": "Add a callback interface between SemesterDashboardView and BacklogDistributionPanel (e.g., an onRollNumberSelect prop) so the Backlog Distribution panel can notify the dashboard of the clicked roll number without duplicating Student Data Sheet rendering logic inside BacklogDistributionPanel.",
+      "featureId": "feature-fix-the-failed-students-view-failed-students-list-in-dashboard-subject-analysis-so-that-the-list-is-scrollable-when-there-are-many-students-the-user-must-be-able-to-scroll-within-the-list-to-reach-all-roll-numbers",
+      "featureTitle": "Fix the failed-students “View failed students” list in Dashboard > Subject Analysis so that the list is scrollable when there are many students (the user must be able to scroll within the list to reach all roll numbers).",
       "files": [
-        "frontend/src/features/dashboard/BacklogDistributionPanel.tsx",
-        "frontend/src/features/dashboard/SemesterDashboardView.tsx"
+        "frontend/src/features/dashboard/SubjectAnalysisList.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -35,7 +36,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-2"
+        "REQ-4"
       ],
       "confidence": "high"
     }

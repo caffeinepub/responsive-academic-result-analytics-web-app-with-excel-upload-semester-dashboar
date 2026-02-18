@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { X, CheckCircle2, XCircle, AlertCircle, User } from 'lucide-react';
 import { StudentRecord } from '@/lib/state/appFlowTypes';
+import { formatSubjectCodeWithAbbreviation } from '@/lib/format/subjectAbbreviation';
 
 interface StudentDataSheetPanelProps {
   student: StudentRecord | null;
@@ -44,6 +45,7 @@ export default function StudentDataSheetPanel({
 
   const subjectEntries = Object.entries(student.subjectResults).map(([code, result]) => ({
     code,
+    codeWithAbbrev: formatSubjectCodeWithAbbreviation(code, subjectCatalog),
     name: subjectCatalog[code] || 'Name not available',
     status: result.status,
     marks: result.marks,
@@ -129,16 +131,21 @@ export default function StudentDataSheetPanel({
           <div className="space-y-2">
             <p className="text-sm font-medium">Backlog Subjects</p>
             <div className="flex flex-wrap gap-2">
-              {student.backlogSubjects.map((subjectCode) => (
-                <Badge key={subjectCode} variant="outline" className="font-mono">
-                  {subjectCode}
-                  {subjectCatalog[subjectCode] && (
-                    <span className="ml-1 font-normal text-muted-foreground">
-                      • {subjectCatalog[subjectCode]}
-                    </span>
-                  )}
-                </Badge>
-              ))}
+              {student.backlogSubjects.map((subjectCode) => {
+                const codeWithAbbrev = formatSubjectCodeWithAbbreviation(subjectCode, subjectCatalog);
+                const subjectName = subjectCatalog[subjectCode];
+                
+                return (
+                  <Badge key={subjectCode} variant="outline" className="font-mono">
+                    {codeWithAbbrev}
+                    {subjectName && subjectName !== 'Name not available' && (
+                      <span className="ml-1 font-normal text-muted-foreground">
+                        • {subjectName}
+                      </span>
+                    )}
+                  </Badge>
+                );
+              })}
             </div>
           </div>
         )}
@@ -167,7 +174,7 @@ export default function StudentDataSheetPanel({
                   subjectEntries.map((subject) => (
                     <TableRow key={subject.code}>
                       <TableCell className="font-mono font-medium">
-                        {subject.code}
+                        {subject.codeWithAbbrev}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {subject.name}

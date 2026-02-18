@@ -1,48 +1,54 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Make Backlog Distribution roll numbers open Student Data Sheet",
+  "title": "Dashboard subject-code abbreviations + scrollable failed-students list",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Make Backlog Distribution roll numbers clickable to select a student and display the existing StudentDataSheetPanel.",
+      "id": "REQ-3",
+      "summary": "Compute and display consistent subject-name abbreviations alongside subject codes across the Dashboard UI (lists, student sheet, and charts) with safe fallbacks.",
       "acceptanceCriteria": [
-        "In Backlog Distribution, each roll number is rendered as an interactive control (e.g., button-like badge) with a clear hover/focus state.",
-        "Clicking a roll number sets the currently selected roll number in the dashboard state and displays the existing StudentDataSheetPanel populated with that student's record.",
-        "If a roll number from Backlog Distribution does not exist in the currently filtered semester/department dataset, the existing 'Student Not Found' state in StudentDataSheetPanel is shown.",
-        "This change does not break the existing SubjectAnalysisList failed-student selection behavior."
+        "In Dashboard > Subject Analysis list items, the subject code display includes a short abbreviation derived from the subject name (e.g., “Digital Electronics” -> “DE”).",
+        "In Student Data Sheet panel, subject codes shown in (a) Backlog Subjects badges and (b) the Subject-wise Results table include the same abbreviation format.",
+        "In Visualizations where subject codes are used as labels (e.g., subject-wise backlog bar chart labels), the displayed label includes the same abbreviation format.",
+        "If a subject name is missing/unavailable, the UI does not crash and uses a safe fallback (e.g., no abbreviation shown).",
+        "All user-facing labels added/changed are in English."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/dashboard/BacklogDistributionPanel.tsx",
+          "path": "frontend/src/lib/format/subjectAbbreviation.ts",
+          "operation": "create",
+          "description": "Add shared utilities to (1) derive a short abbreviation from a subject name string (e.g., initial letters) and (2) format a subject code label using the existing subjectCatalog (code + name-derived abbreviation), including safe fallbacks when the name is missing."
+        },
+        {
+          "path": "frontend/src/features/dashboard/SubjectAnalysisList.tsx",
           "operation": "modify",
-          "description": "Render each roll number as an interactive control (compose existing shadcn-ui primitives, e.g., Button/Badge styling) with hover/focus states, and call the provided selection callback when clicked. Verify the component's usage instructions before implementing."
+          "description": "Use the shared subject-label formatter to render subject code + abbreviation consistently in the Subject Analysis list (alongside the subject name display). Keep fallbacks when subjectCatalog lacks an entry. Uses existing shadcn-ui Select/Badge components; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/features/dashboard/StudentDataSheetPanel.tsx",
+          "operation": "modify",
+          "description": "Update (a) Backlog Subjects badges and (b) the Subject-wise Results table 'Subject Code' cells to display code + the same computed abbreviation derived from subjectCatalog. Ensure missing names do not crash and omit abbreviation when unavailable. Uses existing shadcn-ui Badge/Table components; verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/features/dashboard/SemesterDashboardView.tsx",
           "operation": "modify",
-          "description": "Wire BacklogDistributionPanel roll-number clicks to the existing dashboard selection state so StudentDataSheetPanel (already rendered in Subject Analysis tab) shows the selected student's data or the existing 'Student Not Found' state when no match is found. Verify the component's usage instructions before implementing."
+          "description": "When preparing visualization data for subject-wise backlog charts, replace raw subject-code labels with the shared formatted subject label (code + abbreviation) derived from parsedData.subjectCatalog, while preserving the underlying counts."
         }
       ]
     },
     {
-      "id": "REQ-2",
-      "summary": "Add an onRollNumberSelect callback prop to BacklogDistributionPanel and pass the existing dashboard roll-number selection handler from SemesterDashboardView.",
+      "id": "REQ-4",
+      "summary": "Make the Dashboard > Subject Analysis 'View failed students' list scrollable for long lists without breaking selection behavior.",
       "acceptanceCriteria": [
-        "BacklogDistributionPanel accepts an optional roll-number selection callback and invokes it with the clicked roll number string.",
-        "SemesterDashboardView passes its existing roll-number selection handler to BacklogDistributionPanel.",
-        "StudentDataSheetPanel remains rendered only by SemesterDashboardView (single place of truth for selection)."
+        "When a subject has many failed students, opening “View failed students” shows a dropdown/list area with a maximum height and an internal vertical scrollbar (mouse wheel/trackpad scroll works).",
+        "All failed student roll numbers remain selectable even when the list is long.",
+        "The scroll fix does not break the existing selection behavior (selecting a roll number still opens the Student Data Sheet for that student)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/dashboard/BacklogDistributionPanel.tsx",
+          "path": "frontend/src/features/dashboard/SubjectAnalysisList.tsx",
           "operation": "modify",
-          "description": "Extend BacklogDistributionPanel props with an optional onRollNumberSelect callback and invoke it with the clicked roll number string, without adding any Student Data Sheet rendering logic to this panel. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/features/dashboard/SemesterDashboardView.tsx",
-          "operation": "modify",
-          "description": "Pass the existing roll-number selection handler (used for SubjectAnalysisList failed-student selection) into BacklogDistributionPanel via the new onRollNumberSelect prop, keeping StudentDataSheetPanel rendered only here. Verify the component's usage instructions before implementing."
+          "description": "Adjust the shadcn-ui SelectContent usage via props/className to enforce a max height and vertical scrolling (e.g., overflow-y-auto) for long failed-student lists, without changing selection behavior. Do not modify files under frontend/src/components/ui (compose via props/className only). Verify the component's usage instructions before implementing."
         }
       ]
     }

@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatNumber } from '@/lib/format/numberFormat';
+import { formatSubjectCodeWithAbbreviation } from '@/lib/format/subjectAbbreviation';
 import { AlertCircle } from 'lucide-react';
 
 interface SubjectAnalysisListProps {
@@ -20,6 +21,7 @@ export default function SubjectAnalysisList({
     .map(([code, count]) => ({
       code,
       name: subjectCatalog[code] || 'Name not available',
+      codeWithAbbrev: formatSubjectCodeWithAbbreviation(code, subjectCatalog),
       count,
       failedStudents: subjectFailures.get(code) || [],
     }))
@@ -41,7 +43,7 @@ export default function SubjectAnalysisList({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm font-mono font-semibold text-foreground">
-                  {subject.code}
+                  {subject.codeWithAbbrev}
                 </span>
                 <span className="text-sm text-muted-foreground">
                   {subject.name}
@@ -71,7 +73,7 @@ export default function SubjectAnalysisList({
                     } 
                   />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px] overflow-y-auto">
                   {subject.failedStudents.length === 0 ? (
                     <SelectItem value="none" disabled>
                       No failed students

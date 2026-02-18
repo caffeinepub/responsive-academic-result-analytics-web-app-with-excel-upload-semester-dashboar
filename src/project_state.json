@@ -1,24 +1,26 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
+  "summary": "Student/subject analysis app with student sheet view; add subject name shortcuts next to subject codes and fix scrolling in Subject Analysis > View Students.",
   "architectural_notes": [],
-  "known_issues": [],
-  "isFixRequest": false,
+  "known_issues": [
+    "Subject Analysis > View Students data is currently not scrollable."
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-in-the-dashboard-subject-analysis-tab-update-the-backlog-distribution-panel-so-that-each-displayed-roll-number-is-clickable-and-selecting-it-opens-the-full-student-data-sheet-for-that-student-using-the-same-behavior-as-selecting-a-roll-number-from-the-subject-analysis-failed-students-dropdown",
-      "title": "In the Dashboard > Subject Analysis tab, update the Backlog Distribution panel so that each displayed roll number is clickable and selecting it opens the full Student Data Sheet for that student (using the same behavior as selecting a roll number from the Subject Analysis failed-students dropdown).",
+      "id": "feature-display-a-short-subject-name-abbreviation-alongside-each-subject-code-everywhere-subject-codes-are-shown-in-the-dashboard-ui-e-g-show-digital-electronics-de-next-to-the-subject-code-the-abbreviation-must-be-derived-from-the-subject-name-in-the-existing-subject-catalog-and-should-be-consistent-across-all-places-it-appears",
+      "title": "Display a short subject-name abbreviation alongside each subject code everywhere subject codes are shown in the Dashboard UI (e.g., show “Digital Electronics (DE)” next to the subject code). The abbreviation must be derived from the subject name in the existing subject catalog and should be consistent across all places it appears.",
       "reqIds": [
-        "REQ-1"
+        "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-a-callback-interface-between-semesterdashboardview-and-backlogdistributionpanel-e-g-an-onrollnumberselect-prop-so-the-backlog-distribution-panel-can-notify-the-dashboard-of-the-clicked-roll-number-without-duplicating-student-data-sheet-rendering-logic-inside-backlogdistributionpanel",
-      "title": "Add a callback interface between SemesterDashboardView and BacklogDistributionPanel (e.g., an onRollNumberSelect prop) so the Backlog Distribution panel can notify the dashboard of the clicked roll number without duplicating Student Data Sheet rendering logic inside BacklogDistributionPanel.",
+      "id": "feature-fix-the-failed-students-view-failed-students-list-in-dashboard-subject-analysis-so-that-the-list-is-scrollable-when-there-are-many-students-the-user-must-be-able-to-scroll-within-the-list-to-reach-all-roll-numbers",
+      "title": "Fix the failed-students “View failed students” list in Dashboard > Subject Analysis so that the list is scrollable when there are many students (the user must be able to scroll within the list to reach all roll numbers).",
       "reqIds": [
-        "REQ-2"
+        "REQ-4"
       ],
       "version": 1
     }
@@ -26,12 +28,17 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Apply the same student roll-number click behavior to the backlog distribution view so clicking a roll number opens the student's complete data sheet.",
+      "summary": "Display subject name shortcut/abbreviation alongside each subject code (e.g., Digital Electronics → DE).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Fix Subject Analysis > View Students list/table not scrolling; make the student data area scrollable.",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "gameProjectType": "none",
   "projectName": "Academic Result Analytics",
   "clarification_mode": "instant",
   "clarification_rounds": 0

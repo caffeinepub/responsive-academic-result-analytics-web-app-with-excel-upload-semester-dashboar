@@ -1,59 +1,69 @@
 {
   "kind": "build_request",
-  "title": "Make backlog distribution roll numbers open the Student Data Sheet",
+  "title": "Show subject name abbreviations next to subject codes and fix non-scrollable failed-student list",
   "projectName": "Academic Result Analytics",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "In the Dashboard > Subject Analysis tab, update the Backlog Distribution panel so that each displayed roll number is clickable and selecting it opens the full Student Data Sheet for that student (using the same behavior as selecting a roll number from the Subject Analysis failed-students dropdown).",
+      "id": "REQ-3",
+      "text": "Display a short subject-name abbreviation alongside each subject code everywhere subject codes are shown in the Dashboard UI (e.g., show “Digital Electronics (DE)” next to the subject code). The abbreviation must be derived from the subject name in the existing subject catalog and should be consistent across all places it appears.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "make it same for the backlog distribution also when we click on the roll no the complete data sheet of student should appear"
+          "every where there is the subject code beside that give the short cut of subject name five live digital electronics DE like that"
         ]
       },
       "acceptanceCriteria": [
-        "In Backlog Distribution, each roll number is rendered as an interactive control (e.g., button-like badge) with a clear hover/focus state.",
-        "Clicking a roll number sets the currently selected roll number in the dashboard state and displays the existing StudentDataSheetPanel populated with that student's record.",
-        "If a roll number from Backlog Distribution does not exist in the currently filtered semester/department dataset, the existing 'Student Not Found' state in StudentDataSheetPanel is shown.",
-        "This change does not break the existing SubjectAnalysisList failed-student selection behavior."
+        "In Dashboard > Subject Analysis list items, the subject code display includes a short abbreviation derived from the subject name (e.g., “Digital Electronics” -> “DE”).",
+        "In Student Data Sheet panel, subject codes shown in (a) Backlog Subjects badges and (b) the Subject-wise Results table include the same abbreviation format.",
+        "In Visualizations where subject codes are used as labels (e.g., subject-wise backlog bar chart labels), the displayed label includes the same abbreviation format.",
+        "If a subject name is missing/unavailable, the UI does not crash and uses a safe fallback (e.g., no abbreviation shown).",
+        "All user-facing labels added/changed are in English."
       ]
     },
     {
-      "id": "REQ-2",
-      "text": "Add a callback interface between SemesterDashboardView and BacklogDistributionPanel (e.g., an onRollNumberSelect prop) so the Backlog Distribution panel can notify the dashboard of the clicked roll number without duplicating Student Data Sheet rendering logic inside BacklogDistributionPanel.",
+      "id": "REQ-4",
+      "text": "Fix the failed-students “View failed students” list in Dashboard > Subject Analysis so that the list is scrollable when there are many students (the user must be able to scroll within the list to reach all roll numbers).",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "make it same for the backlog distribution also when we click on the roll no the complete data sheet of student should appear"
+          "and in subject analysis in view students the data is unable to scroll and make it to scroll"
         ]
       },
       "acceptanceCriteria": [
-        "BacklogDistributionPanel accepts an optional roll-number selection callback and invokes it with the clicked roll number string.",
-        "SemesterDashboardView passes its existing roll-number selection handler to BacklogDistributionPanel.",
-        "StudentDataSheetPanel remains rendered only by SemesterDashboardView (single place of truth for selection)."
+        "When a subject has many failed students, opening “View failed students” shows a dropdown/list area with a maximum height and an internal vertical scrollbar (mouse wheel/trackpad scroll works).",
+        "All failed student roll numbers remain selectable even when the list is long.",
+        "The scroll fix does not break the existing selection behavior (selecting a roll number still opens the Student Data Sheet for that student)."
       ]
     }
   ],
   "constraints": [
-    "Do not edit any files under frontend/src/components/ui (compose existing shadcn components instead).",
-    "Do not modify Internet Identity hooks or other files listed as immutable paths in SYSTEM_CONTEXT.",
-    "Keep all changes within the existing React + TypeScript + Tailwind structure; no new backend dependencies."
+    "Do not modify files under frontend/src/components/ui (compose them via props/className only).",
+    "Do not modify any files listed in frontend.immutablePaths.",
+    "Backend must remain single-actor; no new backend services."
   ],
   "nonGoals": [
-    "Adding new backend storage or APIs for student records (data continues to come from the uploaded Excel file).",
-    "Changing analytics calculations for backlog distribution or subject failures.",
-    "Adding new navigation routes or a separate dedicated page for the student data sheet."
+    "Adding or changing backend data storage or schemas for subjects.",
+    "Manually curating subject abbreviations; abbreviations should be computed from the existing subject name text."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }
